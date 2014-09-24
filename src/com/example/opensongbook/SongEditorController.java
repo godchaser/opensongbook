@@ -26,7 +26,7 @@ public class SongEditorController {
         public void buttonClick(ClickEvent event) {
             switch (event.getButton().getId()) {
             case ("transposeButton"):
-                model.chordTranspose(songEditorView.getSelect, );
+                //model.chordTranspose(songEditorView.getSelect, );
                 break;
             }
         }
