@@ -1,0 +1,4 @@
+*.class
+artifacts/
+build/
+test-output/

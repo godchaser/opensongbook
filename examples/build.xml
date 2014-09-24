@@ -1,0 +1,73 @@
+<project name="ArhiXML" basedir="." default="package">
+	<property name="server.main.class" value="EmbeddedServerLauncher" />
+
+	<target name="clean">
+		<delete dir="build" />
+		<delete dir="dist" />
+		<delete dir="WebContent/WEB-INF/classes" />
+	</target>
+
+	<target name="init">
+		<mkdir dir="build" />
+		<mkdir dir="dist" />
+		<mkdir dir="WebContent/WEB-INF/classes" />
+	</target>
+
+	<target name="compile" depends="clean, init" description="Compiles ArhiXML application">
+		<echo message="Compiling Vaadin application sources." />
+
+		<path id="compile.class.path">
+			<fileset dir="tools">
+				<include name="jetty/*.jar" />
+			</fileset>
+			<fileset dir="WebContent">
+				<include name="WEB-INF/lib/*.jar" />
+			</fileset>
+		</path>
+
+		<javac includeantruntime="false" srcdir="src" destdir="build" classpathref="compile.class.path" debug="on" />
+
+		<!--move file="WebContent/WEB-INF/classes/EmbeddedServerLauncher.class" todir="build" /-->
+
+		<copy todir="WebContent/WEB-INF/classes">
+			<fileset dir="src">
+				<exclude name="**/*.java" />
+			</fileset>
+			<fileset dir="build"/>
+		</copy>
+	</target>
+
+	<target name="package" depends="compile" description="Creates ArhiXML WAR package (requires Application Server / Servlet Container)">
+		<echo message="Creating WAR package." />
+
+		<unjar dest="build">
+			<fileset dir="tools/jetty" includes="**/*.jar" />
+			<patternset>
+				<exclude name="META-INF/**/*" />
+				<exclude name="about.html" />
+				<exclude name="plugin.properties" />
+				<exclude name="jetty-dir.css" />
+				<exclude name="jndi.properties" />
+				<exclude name="about_files/" />
+			</patternset>
+		</unjar>
+
+		<war warfile="dist/${ant.project.name}.war" webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="build" includes="**/*" />
+
+			<fileset dir="WebContent">
+				<include name="**/*" />
+				<exclude name="WEB-INF/web.xml" />
+			</fileset>
+
+			<manifest>
+				<attribute name="Main-Class" value="${server.main.class}" />
+			</manifest>
+		</war>
+
+		<echo message="Created WAR file to dist/${ant.project.name}.war." />
+		<echo message="Deploy this file to your application server or servlet container." />
+		<echo message="If you don't have one, application can be started with the embedded server." />
+		<echo message="In this case start ${ant.project.name} like any other Java application. For example, using java -jar dist/${ant.project.name}.war" />
+	</target>
+</project>

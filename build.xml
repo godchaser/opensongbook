@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<project basedir="." default="package" xmlns:ivy="antlib:org.apache.ivy.ant" name="Build script for Opensongbook Vaadin 7 projects">
+
+    <loadproperties srcfile="build.properties" />
+    <property name="workdir" value="${artifacts}/work" />
+
+    <ivy:resolve file="ivy.xml" />
+    <ivy:cachepath pathid="ivy.deps.default" conf="default" />
+    <ivy:cachefileset setid="ivy.deps.default.fileset" conf="default" />
+
+    <path id="classpath">
+        <fileset dir="${webroot}/WEB-INF/lib" erroronmissingdir="no">
+            <include name="*.jar" />
+        </fileset>
+        <fileset dir="${libraries}" erroronmissingdir="no">
+            <include name="*.jar" />
+        </fileset>
+        <path refid="ivy.deps.default" />
+    </path>
+
+    <target name="init">
+        <echo message="Initial cleanup of previous artifacts" />
+        <delete dir="${artifacts}" />
+        <mkdir dir="${artifacts}" />
+        <mkdir dir="${workdir}" />
+    </target>
+
+    <target name="compile-theme" if="theme.name" depends="init">
+        <echo message="Compiling themes" />
+        <mkdir dir="${workdir}/VAADIN/themes/${theme.name}" />
+        <java classname="com.vaadin.sass.SassCompiler" failonerror="yes" fork="yes">
+            <classpath refid="classpath" />
+            <jvmarg value="-Djava.awt.headless=true" />
+            <arg value="${theme.dir}/${theme.name}/styles.scss" />
+            <arg value="${workdir}/VAADIN/themes/${theme.name}/styles.css" />
+        </java>
+    </target>
+
+    <!-- <echo>${toString:classpath}</echo>-->
+    <target name="compile-project" depends="compile-theme">
+        <echo message="Compiling opensongbook project" />
+        <mkdir dir="${workdir}/WEB-INF/classes" />
+        <javac destdir="${workdir}/WEB-INF/classes" debug="${compile.debug}" includeantruntime="no">
+            <src path="${sources}" />
+            <classpath refid="classpath" />
+        </javac>
+    </target>
+
+    <target name="package" depends="compile-project" description="Packages everything in a WAR that has been deployed in ${workdir}">
+        <echo message="Creating war package" />
+        <mkdir dir="${workdir}/WEB-INF/lib" />
+        <copy todir="${workdir}/WEB-INF/lib" flatten="true">
+            <fileset refid="ivy.deps.default.fileset" />
+        </copy>
+
+        <!-- Maybe we'll put sources in the war one day -->
+        <!-- <copy todir="${workdir}">
+			<fileset dir="${sources}"/>
+		</copy>-->
+
+        <delete>
+            <fileset dir="${workdir}/WEB-INF/lib">
+                <include name="**/*-sources.jar" />
+                <include name="**/*-javadoc.jar" />
+                <include name="**/*.servlet-api-3.0.1.jar" />
+            </fileset>
+        </delete>
+
+        <war destfile="${artifacts}/${warfilename}" basedir="${workdir}" needxmlfile="false">
+            <lib dir="${webroot}/WEB-INF/lib" erroronmissingdir="no">
+                <include name="*.jar" />
+            </lib>
+            <lib dir="${libraries}" erroronmissingdir="no">
+                <include name="*.jar" />
+            </lib>
+            <zipfileset dir="${webroot}/WEB-INF/resources" includes="*" prefix="WEB-INF/resources" />
+        </war>
+    </target>
+</project>

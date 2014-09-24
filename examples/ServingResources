@@ -1,0 +1,13 @@
+// Find the application directory
+String basepath = VaadinService.getCurrent()
+                  .getBaseDirectory().getAbsolutePath();
+
+// Image as a file resource
+FileResource resource = new FileResource(new File(basepath +
+                        "/WEB-INF/images/image.png"));
+
+// Show the image in the application
+Image image = new Image("Image from file", resource);
+        
+// Let the user view the file in browser or download it
+Link link = new Link("Link to the image file", resource);
