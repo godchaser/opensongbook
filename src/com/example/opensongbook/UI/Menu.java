@@ -11,7 +11,7 @@ public class Menu extends CustomComponent {
 	public Menu() {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.addComponent(songEditorButton());
-		layout.addComponent(helpButton());
+		layout.addComponent(songBookManagerButton());
 		layout.addComponent(logoutButton());
 		layout.setSizeUndefined();
 		layout.setSpacing(true);
@@ -30,14 +30,14 @@ public class Menu extends CustomComponent {
 		return button;
 	}
 
-	private Button helpButton() {
-		Button button = new Button("Help", new Button.ClickListener() {
+	private Button songBookManagerButton() {
+		Button button = new Button("Songbook Manager", new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				getUI().getNavigator().navigateTo(OpensongbookUI.HELPVIEW);
+				getUI().getNavigator().navigateTo(OpensongbookUI.SONGBOOKMANAGER);
 			}
 		});
-		button.setId("helpButton");
+		button.setId("songBookManagerButton");
 		return button;
 	}
 

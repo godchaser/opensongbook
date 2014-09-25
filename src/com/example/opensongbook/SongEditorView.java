@@ -1,6 +1,7 @@
 package com.example.opensongbook;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,6 +10,7 @@ import com.example.opensongbook.data.ChordTransposer;
 import com.example.opensongbook.data.DocumentWriter;
 import com.example.opensongbook.data.SongSQLContainer;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.sqlcontainer.ColumnProperty;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
@@ -33,269 +35,223 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 public class SongEditorView extends VerticalLayout implements View {
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
-	private SongEditorController controller = new SongEditorController(this);
-	
-	private SongSQLContainer songSQLContainerInstance = new SongSQLContainer();
-	SQLContainer songContainer = songSQLContainerInstance.getSongContainer();
+    private static final long serialVersionUID = 1L;
+    SongEditorController controller;
+    SQLContainer songContainer;
 
-	public SongEditorView() {
-		setSizeFull();
-		setSpacing(true);
+    ListSelect selectChordTransposition;
+    TextArea songTextInput;
 
-		setMargin(true);
-		// setContent(layout);
+    TextField songNameField;
+    TextField songAuthorField;
 
-		addComponent(new Menu());
+    Link downloadExportedSongDocxLink;
 
-		HorizontalLayout horizontalSongFieldLayout = new HorizontalLayout();
+    HorizontalLayout footbarLayout;
+    HorizontalLayout horizontalSongFieldLayout;
+    HorizontalLayout horizontalSongTextLayout;
 
-		final TextField songNameField = new TextField();
-		songNameField.setCaption("Name");
-		// songTextInput.setSizeFull();
-		songNameField.setId("songNameField");
-		// addComponent(songNameField);
+    VerticalLayout verticalSongTextSidebarLayout;
 
-		final TextField songAuthorField = new TextField();
-		songAuthorField.setCaption("Author");
-		// songTextInput.setSizeFull();
-		songAuthorField.setId("songAuthorField");
-		// addComponent(songAuthorField);
+    Button transposeButton;
+    Button newSongButton;
+    Button saveSongButton;
+    Button deleteSongButton;
+    Button exportSongButton;
 
-		horizontalSongFieldLayout.addComponent(songNameField);
-		horizontalSongFieldLayout.addComponent(songAuthorField);
-		horizontalSongFieldLayout.setSizeUndefined();
-		horizontalSongFieldLayout.setSpacing(true);
-		addComponent(horizontalSongFieldLayout);
+    TextField searchSongsField;
+    Table songListTable;
 
-		HorizontalLayout horizontalSongTextLayout = new HorizontalLayout();
-		horizontalSongTextLayout.setSpacing(true);
+    public SongEditorView(SongSQLContainer songSQLContainerInstance) {
+        this.controller = new SongEditorController(this,
+                songSQLContainerInstance);
+        // TODO: this is only temporary here
+        songContainer = songSQLContainerInstance.getSongContainer();
+        createSongEditorComponents();
+    }
 
-		final TextArea songTextInput = new TextArea();
-		// songTextInput.setSizeFull();
-		songTextInput.setCaption("Editor");
-		songTextInput.setWidth("600px");
-		songTextInput.setHeight("400px");
-		songTextInput.setId("songTextInput");
-		// addComponent(songTextInput);
-		createSongSearch(horizontalSongTextLayout, songTextInput,
-				songNameField, songAuthorField);
+    private void createSongEditorComponents() {
+        setSizeFull();
+        setSpacing(true);
+        setMargin(true);
 
-		horizontalSongTextLayout.addComponent(songTextInput);
+        addComponent(new Menu());
 
-		VerticalLayout verticalSongTextSidebarLayout = new VerticalLayout();
-		verticalSongTextSidebarLayout.setSpacing(true);
-		// Create the selection component
-		final ListSelect selectChordTransposition = new ListSelect(
-				"Chord transpose");
+        // this are song editor components
+        horizontalSongFieldLayout = new HorizontalLayout();
 
-		for (int i = -7; i < 7; i++) {
-			selectChordTransposition.addItem(i);
-		}
+        songNameField = new TextField();
+        songNameField.setCaption("Name");
+        // songTextInput.setSizeFull();
+        songNameField.setId("songNameField");
 
-		selectChordTransposition.setId("selectChordTransposition");
-		selectChordTransposition.setNullSelectionAllowed(false);
-		// Show 5 items and a scrollbar if there are more
-		selectChordTransposition.setRows(3);
-		// selectChordTransposition.setTabIndex(7);
-		// addComponent(selectChordTransposition);
+        songAuthorField = new TextField();
+        songAuthorField.setCaption("Author");
+        // songTextInput.setSizeFull();
+        songAuthorField.setId("songAuthorField");
 
-		Button transposeButton = new Button("Transpose");
-		transposeButton.setId("transposeButton");
-		transposeButton.addClickListener(controller.buttonListener);
-		 /*
-        transposeButton.addClickListener(new Button.ClickListener() {
+        horizontalSongFieldLayout.addComponent(songNameField);
+        horizontalSongFieldLayout.addComponent(songAuthorField);
+        horizontalSongFieldLayout.setSizeUndefined();
+        horizontalSongFieldLayout.setSpacing(true);
+        addComponent(horizontalSongFieldLayout);
 
+        horizontalSongTextLayout = new HorizontalLayout();
+        horizontalSongTextLayout.setSpacing(true);
+
+        songTextInput = new TextArea();
+        // songTextInput.setSizeFull();
+        songTextInput.setCaption("Editor");
+        songTextInput.setWidth("600px");
+        songTextInput.setHeight("400px");
+        songTextInput.setId("songTextInput");
+
+        verticalSongTextSidebarLayout = new VerticalLayout();
+        verticalSongTextSidebarLayout.setSpacing(true);
+
+        selectChordTransposition = new ListSelect("Chord transpose");
+        for (int i = -7; i < 7; i++) {
+            selectChordTransposition.addItem(i);
+        }
+        selectChordTransposition.setId("selectChordTransposition");
+        selectChordTransposition.setNullSelectionAllowed(false);
+        // Show 5 items and a scrollbar if there are more
+        selectChordTransposition.setRows(3);
+        selectChordTransposition.select(0);
+        selectChordTransposition.setValue(0);
+
+        transposeButton = new Button("Transpose");
+        transposeButton.setId("transposeButton");
+        transposeButton.addClickListener(controller.buttonListener);
+
+        newSongButton = new Button("New song");
+        newSongButton.setId("newSongButton");
+        newSongButton.addClickListener(controller.buttonListener);
+
+        saveSongButton = new Button("Save song");
+        saveSongButton.setId("saveSongButton");
+        saveSongButton.addClickListener(controller.buttonListener);
+
+        deleteSongButton = new Button("Delete song");
+        deleteSongButton.setId("deleteSongButton");
+        deleteSongButton.addClickListener(controller.buttonListener);
+
+        verticalSongTextSidebarLayout.addComponent(selectChordTransposition);
+        verticalSongTextSidebarLayout.addComponent(transposeButton);
+        verticalSongTextSidebarLayout.addComponent(newSongButton);
+        verticalSongTextSidebarLayout.addComponent(saveSongButton);
+        verticalSongTextSidebarLayout.addComponent(deleteSongButton);
+
+        createSongSearchComponents(horizontalSongTextLayout, songTextInput,
+                songNameField, songAuthorField);
+        horizontalSongTextLayout.addComponent(songTextInput);
+        horizontalSongTextLayout.addComponent(verticalSongTextSidebarLayout);
+        addComponent(horizontalSongTextLayout);
+
+        // this are footbar components
+        footbarLayout = new HorizontalLayout();
+        footbarLayout.setSpacing(true);
+        exportSongButton = new Button("Export song to docx");
+        exportSongButton.setId("exportSongButton");
+        exportSongButton.addClickListener(controller.buttonListener);
+        footbarLayout.addComponent(exportSongButton);
+
+        Link downloadExportedSongDocxLink = new Link();
+        downloadExportedSongDocxLink.setCaption("exported song (docx)");
+        downloadExportedSongDocxLink.setId("downloadExportedSongDocxLink");
+        addComponent(footbarLayout);
+    }
+
+    public void createSongSearchComponents(
+            HorizontalLayout horizontalSongTextLayout, TextArea songTextInput,
+            TextField songNameField, TextField songAuthorField) {
+
+        searchSongsField = new TextField("Search");
+        searchSongsField.setId("searchSongsField");
+        searchSongsField.setTextChangeEventMode(TextChangeEventMode.LAZY);
+        searchSongsField.setTextChangeTimeout(200);
+        searchSongsField.addTextChangeListener(new TextChangeListener() {
+
+            /**
+             * 
+             */
             private static final long serialVersionUID = 1L;
 
-            public void buttonClick(ClickEvent event) {
-                String[] songList = songTextInput.getValue().split("[\r\n]+");
-                StringBuilder updatedSong = new StringBuilder();
-                for (String songLine : songList) {
-                    // this is a chord line
-                    if (songLine.startsWith(".")) {
-                        Pattern p = Pattern.compile("[\\w'\\S]+");
-                        Matcher m = p.matcher(songLine);
-                        StringBuffer chordLineBuilder = new StringBuffer(
-                                songLine);
-                        // go through each chord
-                        while (m.find()) {
-                            String rootChord = songLine.substring(m.start(),
-                                    m.end());
-                            String transposed = (".".equals(rootChord)) ? "."
-                                    : ChordTransposer.improvedTransposeChord(
-                                            rootChord,
-                                            (int) selectChordTransposition
-                                                    .getValue());
-                            ;
-                            // String transposed =
-                            // ChordTransposer.improvedTransposeChord(rootChord,
-                            // (int) selectChordTransposition.getValue());
-                            chordLineBuilder.replace(m.start(), m.end(),
-                                    transposed);
-                        }
-                        updatedSong.append(chordLineBuilder.toString()
-                                + newline);
-                    } else {
-                        updatedSong.append(songLine + newline);
-                    }
-                }
-                songTextInput.setValue(updatedSong.toString());
+            public void textChange(TextChangeEvent event) {
+                songContainer.removeAllContainerFilters();
+                songContainer.addContainerFilter(
+                        SongSQLContainer.propertyIds.songLyrics.toString(),
+                        event.getText(), true, false);
+            }
+        });
+
+        songListTable = new Table(null, songContainer);
+        songListTable.setId("songListTable");
+        songListTable.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
+        songListTable.setSelectable(true);
+        songListTable.setEditable(false);
+        songListTable.setNullSelectionAllowed(false);
+        songListTable.setVisibleColumns(new Object[] { songListTable
+                .getVisibleColumns()[1] });
+        // songListTable.setPageLength(20);
+        // songListTable.sort(SongSQLContainer.propertyIds.songTitle, true);
+        // table.addItemClickListener(new Listener());
+
+        // listen for valueChange, a.k.a 'select' and update the label
+        songListTable.addValueChangeListener(this.controller
+                .getTableValueChangeListener(songListTable, songTextInput,
+                        songNameField, songAuthorField));
+
+        /*
+        songListTable.addItemClickListener(new ItemClickListener() {
+
+            @Override
+            public void itemClick(ItemClickEvent event) {
+                if (!event.isDoubleClick())
+                    return;
             }
         });
         */
-		// addComponent(transposeButton);
+        searchSongsField.setWidth("150px");
+        songListTable.setWidth("150px");
 
-		Button newSongButton = new Button("New song");
-		newSongButton.setId("newSongButton");
+        VerticalLayout songSearchLayout = new VerticalLayout();
+        songSearchLayout.addComponent(searchSongsField);
+        songSearchLayout.addComponent(songListTable);
+        horizontalSongTextLayout.addComponent(songSearchLayout);
+    }
 
-		Button saveSongButton = new Button("Save song");
-		saveSongButton.setId("saveSongButton");
+    public HorizontalLayout getFootbarLayout() {
+        return footbarLayout;
+    }
 
-		Button deleteSongButton = new Button("Delete song");
-		deleteSongButton.setId("deleteSongButton");
+    public TextField getSongNameField() {
+        return songNameField;
+    }
 
-		verticalSongTextSidebarLayout.addComponent(selectChordTransposition);
-		verticalSongTextSidebarLayout.addComponent(transposeButton);
-		verticalSongTextSidebarLayout.addComponent(newSongButton);
-		verticalSongTextSidebarLayout.addComponent(saveSongButton);
-		verticalSongTextSidebarLayout.addComponent(deleteSongButton);
+    public TextField getSongAuthorField() {
+        return songAuthorField;
+    }
 
-		horizontalSongTextLayout.addComponent(verticalSongTextSidebarLayout);
-		addComponent(horizontalSongTextLayout);
-       
-		final HorizontalLayout footbarLayout = new HorizontalLayout();
-		footbarLayout.setSpacing(true);
-		Button exportSongButton = new Button("Export song to docx");
-		exportSongButton.setId("exportSongButton");
-		footbarLayout.addComponent(exportSongButton);
+    public TextArea getSongTextInput() {
+        return songTextInput;
+    }
 
-		exportSongButton.addClickListener(new Button.ClickListener() {
-			/**
-		 * 
-		 */
-			private static final long serialVersionUID = 1L;
+    public ListSelect getSelectChordTransposition() {
+        return selectChordTransposition;
+    }
 
-			public void buttonClick(ClickEvent event) {
-				String[] songList = songTextInput.getValue().split("[\r\n]+");
-				String songName = songNameField.getValue();
-				ArrayList<String> songArray = new ArrayList<String>();
-				for (String songLine : songList) {
-					songArray.add(songLine);
-				}
-				DocumentWriter doc = new DocumentWriter();
-				try {
-					FileResource generatedFile = doc.newWordDoc(
-							"testOutputSong", songName, songArray);
-					Link downloadExportedSongDocxLink = new Link(
-							"Link to the generated docx", generatedFile);
-					downloadExportedSongDocxLink
-							.setCaption("Song in docx format");
-					downloadExportedSongDocxLink
-							.setId("downloadExportedSongDocxLink");
-					footbarLayout.addComponent(downloadExportedSongDocxLink);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
-		addComponent(footbarLayout);
-	}
+    public Link getDownloadExportedSongDocxLink() {
+        return downloadExportedSongDocxLink;
+    }
 
-	public void createSongSearch(HorizontalLayout horizontalSongTextLayout,
-			final TextArea songTextInput, final TextField songNameField,
-			final TextField songAuthorField) {
+    @Override
+    public void enter(ViewChangeEvent event) {
+        // TODO Auto-generated method stub
 
-		TextField searchSongsField = new TextField("Search");
-		searchSongsField.setId("searchSongsField");
-		searchSongsField.setTextChangeEventMode(TextChangeEventMode.LAZY);
-		searchSongsField.setTextChangeTimeout(200);
-		searchSongsField.addTextChangeListener(new TextChangeListener() {
-
-			/**
-             * 
-             */
-			private static final long serialVersionUID = 1L;
-
-			public void textChange(TextChangeEvent event) {
-				songContainer.removeAllContainerFilters();
-				songContainer.addContainerFilter(
-						SongSQLContainer.propertyIds.songLyrics.toString(),
-						event.getText(), true, false);
-			}
-		});
-
-		final Table songListTable = new Table(null, songContainer);
-		songListTable.setId("songListTable");
-		songListTable.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
-		songListTable.setSelectable(true);
-		songListTable.setEditable(false);
-		songListTable.setNullSelectionAllowed(false);
-		songListTable.setVisibleColumns(new Object[] { songListTable
-				.getVisibleColumns()[1] });
-		// songListTable.setPageLength(20);
-		// songListTable.sort(SongSQLContainer.propertyIds.songTitle, true);
-		// table.addItemClickListener(new Listener());
-
-		// listen for valueChange, a.k.a 'select' and update the label
-		songListTable.addValueChangeListener(new Table.ValueChangeListener() {
-			/**
-             * 
-             */
-			private static final long serialVersionUID = 1L;
-
-			public void valueChange(
-					com.vaadin.data.Property.ValueChangeEvent event) {
-				// in multiselect mode, a Set of itemIds is returned,
-				// in singleselect mode the itemId is returned directly
-				// TODO: all this should be logged
-				System.out.println("songListTable " + songListTable.getValue());
-				Item it = songContainer.getItem(songListTable.getValue());
-				// System.out.println("item: " + it);
-				String lyrics = (String) it.getItemProperty(
-						SongSQLContainer.propertyIds.songLyrics.toString())
-						.getValue();
-				String songTitle = (String) it.getItemProperty(
-						SongSQLContainer.propertyIds.songTitle.toString())
-						.getValue();
-				String songAuthor = (String) it.getItemProperty(
-						SongSQLContainer.propertyIds.songAuthor.toString())
-						.getValue();
-				// System.out.println("lyrics  " +lyrics);
-				songTextInput.setValue(lyrics);
-				songNameField.setValue(songTitle);
-				songAuthorField.setValue(songAuthor);
-			}
-		});
-		songListTable.addItemClickListener(new ItemClickListener() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (!event.isDoubleClick())
-					return;
-			}
-		});
-		searchSongsField.setWidth("150px");
-		songListTable.setWidth("150px");
-
-		VerticalLayout songSearchLayout = new VerticalLayout();
-		songSearchLayout.addComponent(searchSongsField);
-		songSearchLayout.addComponent(songListTable);
-		horizontalSongTextLayout.addComponent(songSearchLayout);
-	}
-
-	@Override
-	public void enter(ViewChangeEvent event) {
-		// TODO Auto-generated method stub
-
-	}
+    }
 
 }

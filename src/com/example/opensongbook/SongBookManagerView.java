@@ -1,30 +1,23 @@
 package com.example.opensongbook;
 
 import com.example.opensongbook.UI.Menu;
+import com.example.opensongbook.data.SongSQLContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class HelpView extends VerticalLayout implements View {
-    public HelpView() {
+public class SongBookManagerView extends VerticalLayout implements View {
+    public SongBookManagerView(SongSQLContainer songSQLContainerInstance) {
         setSizeFull();
         setSpacing(true);
+        setMargin(true);
         addComponent(new Menu());
-        addComponent(headingLabel());
-        addComponent(someText());
-    }
-
-    private Label headingLabel() {
-        return new Label("Help");
-    }
-
-    private Label someText() {
-        Label label = new Label("this is example help");
-        label.setContentMode(ContentMode.HTML);
-        return label;
+        TwinColSelect songBookManagerTwinColSelect = new TwinColSelect();
+        addComponent(songBookManagerTwinColSelect);
     }
 
     @Override

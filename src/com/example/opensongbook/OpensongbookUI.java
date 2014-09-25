@@ -2,6 +2,8 @@ package com.example.opensongbook;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.example.opensongbook.data.SongDatabaseConnector;
+import com.example.opensongbook.data.SongSQLContainer;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
@@ -16,7 +18,12 @@ import com.vaadin.ui.VerticalLayout;
 public class OpensongbookUI extends UI {
 
     public Navigator navigator;
-    public static final String HELPVIEW = "help";
+    VerticalLayout layout;
+    
+    SongDatabaseConnector songDatabaseConnector;
+    SongSQLContainer songSQLContainerInstance;
+    
+    public static final String SONGBOOKMANAGER = "songbookmanager";
     public static final String SONGEDITOR = "songeditor";
 
     @WebServlet(value = "/*", asyncSupported = true)
@@ -30,7 +37,10 @@ public class OpensongbookUI extends UI {
         // setContent(mainWindow.drawComponents());
         // MainDashboard mainWindow = new MainDashboard();
         // setContent(mainWindow.buildMainView());
-        final VerticalLayout layout = new VerticalLayout();
+        songDatabaseConnector = new SongDatabaseConnector();
+        songSQLContainerInstance = new SongSQLContainer();
+
+        layout = new VerticalLayout();
         layout.setMargin(true);
         layout.setSpacing(true);
         setContent(layout);
@@ -38,8 +48,8 @@ public class OpensongbookUI extends UI {
                 layout);
         navigator = new Navigator(UI.getCurrent(), viewDisplay);
         navigator.addView("", new LoginView());
-        navigator.addView(SONGEDITOR, new SongEditorView());
-        navigator.addView(HELPVIEW, new HelpView());
+        navigator.addView(SONGEDITOR, new SongEditorView(songSQLContainerInstance));
+        navigator.addView(SONGBOOKMANAGER, new SongBookManagerView(songSQLContainerInstance));
     }
 
 }
