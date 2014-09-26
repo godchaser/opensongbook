@@ -1,31 +1,13 @@
 package com.example.opensongbook;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.example.opensongbook.UI.Menu;
-import com.example.opensongbook.data.ChordTransposer;
-import com.example.opensongbook.data.DocumentWriter;
 import com.example.opensongbook.data.SongSQLContainer;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.data.util.sqlcontainer.ColumnProperty;
-import com.vaadin.data.util.sqlcontainer.SQLContainer;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileResource;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Table;
@@ -40,7 +22,6 @@ public class SongEditorView extends VerticalLayout implements View {
      */
     private static final long serialVersionUID = 1L;
     SongEditorController controller;
-    SQLContainer songContainer;
 
     ListSelect selectChordTransposition;
     TextArea songTextInput;
@@ -55,6 +36,7 @@ public class SongEditorView extends VerticalLayout implements View {
     HorizontalLayout horizontalSongTextLayout;
 
     VerticalLayout verticalSongTextSidebarLayout;
+    VerticalLayout songSearchLayout;
 
     Button transposeButton;
     Button newSongButton;
@@ -68,8 +50,6 @@ public class SongEditorView extends VerticalLayout implements View {
     public SongEditorView(SongSQLContainer songSQLContainerInstance) {
         this.controller = new SongEditorController(this,
                 songSQLContainerInstance);
-        // TODO: this is only temporary here
-        songContainer = songSQLContainerInstance.getSongContainer();
         createSongEditorComponents();
     }
 
@@ -159,7 +139,7 @@ public class SongEditorView extends VerticalLayout implements View {
         exportSongButton.addClickListener(controller.buttonListener);
         footbarLayout.addComponent(exportSongButton);
 
-        Link downloadExportedSongDocxLink = new Link();
+        downloadExportedSongDocxLink = new Link();
         downloadExportedSongDocxLink.setCaption("exported song (docx)");
         downloadExportedSongDocxLink.setId("downloadExportedSongDocxLink");
         addComponent(footbarLayout);
@@ -173,22 +153,10 @@ public class SongEditorView extends VerticalLayout implements View {
         searchSongsField.setId("searchSongsField");
         searchSongsField.setTextChangeEventMode(TextChangeEventMode.LAZY);
         searchSongsField.setTextChangeTimeout(200);
-        searchSongsField.addTextChangeListener(new TextChangeListener() {
+        searchSongsField.addTextChangeListener(controller
+                .getSearchFieldTextChangeListener());
 
-            /**
-             * 
-             */
-            private static final long serialVersionUID = 1L;
-
-            public void textChange(TextChangeEvent event) {
-                songContainer.removeAllContainerFilters();
-                songContainer.addContainerFilter(
-                        SongSQLContainer.propertyIds.songLyrics.toString(),
-                        event.getText(), true, false);
-            }
-        });
-
-        songListTable = new Table(null, songContainer);
+        songListTable = new Table(null, controller.getSQLContainer());
         songListTable.setId("songListTable");
         songListTable.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
         songListTable.setSelectable(true);
@@ -196,29 +164,15 @@ public class SongEditorView extends VerticalLayout implements View {
         songListTable.setNullSelectionAllowed(false);
         songListTable.setVisibleColumns(new Object[] { songListTable
                 .getVisibleColumns()[1] });
-        // songListTable.setPageLength(20);
-        // songListTable.sort(SongSQLContainer.propertyIds.songTitle, true);
-        // table.addItemClickListener(new Listener());
 
-        // listen for valueChange, a.k.a 'select' and update the label
         songListTable.addValueChangeListener(this.controller
                 .getTableValueChangeListener(songListTable, songTextInput,
                         songNameField, songAuthorField));
 
-        /*
-        songListTable.addItemClickListener(new ItemClickListener() {
-
-            @Override
-            public void itemClick(ItemClickEvent event) {
-                if (!event.isDoubleClick())
-                    return;
-            }
-        });
-        */
         searchSongsField.setWidth("150px");
         songListTable.setWidth("150px");
 
-        VerticalLayout songSearchLayout = new VerticalLayout();
+        songSearchLayout = new VerticalLayout();
         songSearchLayout.addComponent(searchSongsField);
         songSearchLayout.addComponent(songListTable);
         horizontalSongTextLayout.addComponent(songSearchLayout);
