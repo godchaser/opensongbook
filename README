@@ -11,6 +11,7 @@ GUI
 - better first to implement Navigator -https://github.com/degiere/vaadin-navigation-example
 - here are the components: http://demo.vaadin.com/sampler-for-vaadin6
 - Instant text field (for song lookup)
+- progress indictation while generating docx
 
 DB
 - should use sqlcontainter - https://github.com/javadev/vaadin-sqlcontainer-demo

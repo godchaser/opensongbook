@@ -22,7 +22,11 @@ public class SongEditorModel implements Serializable {
 
     public SongEditorModel(SongSQLContainer songSQLContainerInstance) {
         this.songSQLContainer = songSQLContainerInstance.getSongContainer();
-        // TODO Auto-generated constructor stub
+        sortSQLContainterAlphabetical();
+    }
+    
+    private void sortSQLContainterAlphabetical(){
+        this.songSQLContainer.sort(new Object[] {SongSQLContainer.propertyIds.songTitle.toString()}, new boolean[] { true });
     }
 
     String chordTranspose(int transposeAmmount, String songText) {
