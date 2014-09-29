@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.poi.xwpf.usermodel.Borders;
 import org.apache.poi.xwpf.usermodel.BreakType;
@@ -12,6 +14,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
 
+import com.vaadin.data.util.sqlcontainer.RowId;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinService;
@@ -96,7 +99,7 @@ public class DocumentWriter {
     }
 
     public FileResource newSongbookWordDoc(String filename,
-            SQLContainer sqlContainter, ArrayList <String> songIds) throws Exception {
+            SQLContainer sqlContainter, Object selectedSongs) throws Exception {
 
         // XWPFDocument template = new XWPFDocument(new FileInputStream(new
         // File("test\\template.dotx")));
@@ -113,13 +116,33 @@ public class DocumentWriter {
         XWPFStyles newStyles = document.createStyles();
         newStyles.setStyles(template.getStyle());
 
-        for (String songitemId : songIds) {
+        ArrayList<RowId> selectedSongsRowIds = new ArrayList<RowId>();
+        if (selectedSongs instanceof Set) {
+            @SuppressWarnings("unchecked")
+            Set<RowId> set = (Set<RowId>) selectedSongs;
+            Iterator<RowId> iter = set.iterator();
+            while (iter.hasNext()) {
+                RowId row = (RowId) iter.next();
+                selectedSongsRowIds.add(row);
+            }
+        } else {
+            selectedSongsRowIds.add((RowId) selectedSongs);
+        }
+
+        for (RowId songitemId : selectedSongsRowIds) {
+            System.out.println("now getting row: " + songitemId);
             writeSong(
                     document,
-                    sqlContainter.getItem(songitemId).getItemProperty(
-                            SongSQLContainer.propertyIds.songTitle.toString()).toString(),
-                    sqlContainter.getItem(songitemId).getItemProperty(
-                            SongSQLContainer.propertyIds.songLyrics.toString()).toString());
+                    sqlContainter
+                            .getItem(songitemId)
+                            .getItemProperty(
+                                    SongSQLContainer.propertyIds.songTitle
+                                            .toString()).getValue().toString(),
+                    sqlContainter
+                            .getItem(songitemId)
+                            .getItemProperty(
+                                    SongSQLContainer.propertyIds.songLyrics
+                                            .toString()).getValue().toString());
         }
         // tmpRunHeader.addBreak(BreakType.PAGE);
 

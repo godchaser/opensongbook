@@ -6,7 +6,6 @@ import com.vaadin.server.FileResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
 
 public class SongBookManagerController {
     SongBookManagerModel model;
@@ -41,8 +40,9 @@ public class SongBookManagerController {
                  */
                 break;
             case ("exportSongbookButton"):
-                Object o = songBookManagerView.getSelectedSongs();
-                FileResource generatedFile = model.generateSongbook(o);
+                Object selectedSongs = songBookManagerView.getSelectedSongs();
+                FileResource generatedFile = model
+                        .generateSongbook(selectedSongs);
 
                 songBookManagerView.getDownloadExportedSongDocxLink()
                         .setResource(generatedFile);

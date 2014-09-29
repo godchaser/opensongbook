@@ -2,9 +2,9 @@ package com.example.opensongbook.UI;
 
 import com.example.opensongbook.OpensongbookUI;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Button.ClickEvent;
 
 @SuppressWarnings("serial")
 public class Menu extends CustomComponent {
