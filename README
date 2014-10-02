@@ -10,31 +10,23 @@ GUI
 - see if dashboard design is good - http://demo.vaadin.com/dashboard/
 - better first to implement Navigator -https://github.com/degiere/vaadin-navigation-example
 - here are the components: http://demo.vaadin.com/sampler-for-vaadin6
-- Instant text field (for song lookup)
 - progress indictation while generating docx
-
-DB
-- should use sqlcontainter - https://github.com/javadev/vaadin-sqlcontainer-demo
+- maybe i should use responsive design - addon
 
 TESTING
-- should use testng
-- write TC to test if chord lines from all songs are recognized
+- should use testng- write TC to test if chord lines from all songs are recognized
 - maybe use selenium for basic end-end TC
 
-DEPLOYINT
-- use jenkins to deploy built war to tomcat
 
 LOGGING
 - set up the logging interface - logback (sl4j)
-
-- u test folder napravi package isti kao u src i tamo stavi testove
 - možda ne koristiti triggere - jer sam updejtam tablicu, a ne netko drugi
 
 ANT
 - generate ID of versions
 
-TODO
-- sort songs alphabetical by default - (filter)
-
 ANDROID
 - make some interface for android app
+
+CODE REFACTURING
+- see examples for MVP
