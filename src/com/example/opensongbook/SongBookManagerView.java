@@ -6,7 +6,9 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 
@@ -17,6 +19,9 @@ public class SongBookManagerView extends VerticalLayout implements View {
 
     HorizontalLayout footbarLayout;
     Link downloadExportedSongDocxLink;
+
+    ProgressBar songBookExportProgress;
+    Label songBookExportStatus;
 
     public HorizontalLayout getFootbarLayout() {
         return footbarLayout;
@@ -54,11 +59,25 @@ public class SongBookManagerView extends VerticalLayout implements View {
         downloadExportedSongDocxLink = new Link();
         downloadExportedSongDocxLink.setCaption("exported song (docx)");
         downloadExportedSongDocxLink.setId("downloadExportedSongDocxLink");
+
+        songBookExportStatus = new Label("not running");
+        footbarLayout.addComponent(songBookExportStatus);
+
+        songBookExportProgress = new ProgressBar(new Float(0.0));
+        songBookExportProgress.setEnabled(false);
+        footbarLayout.addComponent(songBookExportProgress);
     }
 
     public Object getSelectedSongs() {
         Object selectedSongs = songBookManagerTwinColSelect.getValue();
         return selectedSongs;
+    }
+    
+    public Object[] getProgressComponents(){
+        Object[] progressComponents = new Object[2];
+        progressComponents[0]=songBookExportStatus;
+        progressComponents[1]=songBookExportProgress;
+        return progressComponents;
     }
 
     @Override

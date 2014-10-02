@@ -16,13 +16,13 @@ public class SongBookManagerModel {
         return songSQLContainer;
     }
 
-    public FileResource generateSongbook(Object selectedSongs) {
+    public FileResource generateSongbook(Object selectedSongs, Object[] progressComponents) {
         // TODO Auto-generated method stub
         FileResource generatedFile = null;
         DocumentWriter doc = new DocumentWriter();
         try {
             generatedFile = doc.newSongbookWordDoc("testOutputSong",
-                    songSQLContainer, selectedSongs);
+                    songSQLContainer, selectedSongs, progressComponents);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -42,7 +42,7 @@ public class SongBookManagerController {
             case ("exportSongbookButton"):
                 Object selectedSongs = songBookManagerView.getSelectedSongs();
                 FileResource generatedFile = model
-                        .generateSongbook(selectedSongs);
+                        .generateSongbook(selectedSongs, songBookManagerView.getProgressComponents());
 
                 songBookManagerView.getDownloadExportedSongDocxLink()
                         .setResource(generatedFile);
