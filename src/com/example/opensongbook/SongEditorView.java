@@ -88,6 +88,7 @@ public class SongEditorView extends VerticalLayout implements View {
         songTextInput.setWidth("600px");
         songTextInput.setHeight("400px");
         songTextInput.setId("songTextInput");
+        songTextInput.setStyleName("monoSpaceTextArea");
 
         verticalSongTextSidebarLayout = new VerticalLayout();
         verticalSongTextSidebarLayout.setSpacing(true);

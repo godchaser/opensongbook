@@ -9,4 +9,7 @@
   @include reindeer;
 
   /* Insert your theme rules here */
+.monoSpaceTextArea {
+    font-family: "DejaVu Sans Mono", "Courier New", Consolas, "Lucida Console", "Liberation Mono", monospace !important;
+}
 }
