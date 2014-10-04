@@ -16,11 +16,17 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SongEditorController implements Serializable {
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
+    
+    static final Logger LOG = LoggerFactory.getLogger(SongEditorController.class);
+    
     private SongEditorModel model;
     private SongEditorView songEditorView;
 
@@ -101,8 +107,11 @@ public class SongEditorController implements Serializable {
             // in multiselect mode, a Set of itemIds is returned,
             // in singleselect mode the itemId is returned directly
             // TODO: all this should be logged
-            System.out
-                    .println("songListTable " + this.songListTable.getValue());
+            //System.out
+            //        .println("songListTable " + this.songListTable.getValue());
+            
+            LOG.trace("songListTable " + this.songListTable.getValue());
+            
             Item it = model.getSongSQLContainer().getItem(
                     this.songListTable.getValue());
             // System.out.println("item: " + it);
