@@ -57,6 +57,14 @@
         <!-- <copy todir="${workdir}">
 			<fileset dir="${sources}"/>
 		</copy>-->
+        
+        <!-- Prepare logging -->
+        <echo message="Copy log configuration" />
+        <copy todir="${workdir}/WEB-INF/classes">
+            <fileset dir="${sources}">
+                <include name="logback.xml" />
+            </fileset>
+		</copy>
 
         <delete>
             <fileset dir="${workdir}/WEB-INF/lib">
