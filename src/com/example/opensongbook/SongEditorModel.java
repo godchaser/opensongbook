@@ -1,7 +1,6 @@
 package com.example.opensongbook;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,9 +23,11 @@ public class SongEditorModel implements Serializable {
         this.songSQLContainer = songSQLContainerInstance.getSongContainer();
         sortSQLContainterAlphabetical();
     }
-    
-    private void sortSQLContainterAlphabetical(){
-        this.songSQLContainer.sort(new Object[] {SongSQLContainer.propertyIds.songTitle.toString()}, new boolean[] { true });
+
+    private void sortSQLContainterAlphabetical() {
+        this.songSQLContainer.sort(
+                new Object[] { SongSQLContainer.propertyIds.songTitle
+                        .toString() }, new boolean[] { true });
     }
 
     String chordTranspose(int transposeAmmount, String songText) {
@@ -58,19 +59,14 @@ public class SongEditorModel implements Serializable {
         return updatedSong.toString();
     }
 
-    FileResource exportSong(String songName, String songAuthor, String songText) {
-        String[] songList = songText.split("[\r\n]+");
-        System.out.println(songText);
-        System.out.println(songList);
-        ArrayList<String> songArray = new ArrayList<String>();
+    public FileResource generateSongbook(Object selectedSong,
+            Object[] progressComponents) {
+        // TODO Auto-generated method stub
         FileResource generatedFile = null;
-        for (String songLine : songList) {
-            songArray.add(songLine);
-        }
         DocumentWriter doc = new DocumentWriter();
         try {
-            generatedFile = doc.newWordDoc("testOutputSong", songName,
-                    songArray);
+            generatedFile = doc.newSongbookWordDoc("testOutputSong",
+                    songSQLContainer, selectedSong, progressComponents);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -81,4 +77,5 @@ public class SongEditorModel implements Serializable {
     public SQLContainer getSongSQLContainer() {
         return songSQLContainer;
     }
+
 }

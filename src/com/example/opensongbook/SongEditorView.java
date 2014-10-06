@@ -1,7 +1,5 @@
 package com.example.opensongbook;
 
-
-import com.example.opensongbook.UI.Menu;
 import com.example.opensongbook.data.SongSQLContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -58,7 +56,7 @@ public class SongEditorView extends VerticalLayout implements View {
         setSpacing(true);
         setMargin(true);
 
-        addComponent(new Menu());
+        addComponent(new NavigationMenu());
 
         // this are song editor components
         horizontalSongFieldLayout = new HorizontalLayout();
@@ -207,6 +205,17 @@ public class SongEditorView extends VerticalLayout implements View {
     public void enter(ViewChangeEvent event) {
         // TODO Auto-generated method stub
 
+    }
+
+    public Object getSelectedSong() {
+        // TODO Auto-generated method stub
+        Object selectedSong = songListTable.getValue();
+        return selectedSong;
+    }
+
+    public Object[] getProgressComponents() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

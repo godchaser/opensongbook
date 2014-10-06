@@ -1,14 +1,17 @@
-package com.example.opensongbook.UI;
+package com.example.opensongbook;
 
-import com.example.opensongbook.OpensongbookUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 
 @SuppressWarnings("serial")
-public class Menu extends CustomComponent {
-	public Menu() {
+public class NavigationMenu extends CustomComponent {
+    static final Logger LOG = LoggerFactory.getLogger(NavigationMenu.class);
+	public NavigationMenu() {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.addComponent(songEditorButton());
 		layout.addComponent(songBookManagerButton());
@@ -23,6 +26,7 @@ public class Menu extends CustomComponent {
 		Button button = new Button("Song Editor", new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
+			    LOG.trace("Song Editor navigation button clicked");
 				getUI().getNavigator().navigateTo(OpensongbookUI.SONGEDITOR);
 			}
 		});
@@ -34,6 +38,7 @@ public class Menu extends CustomComponent {
 		Button button = new Button("Songbook Manager", new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
+	             LOG.trace("Songbook Manager navigation button clicked");
 				getUI().getNavigator().navigateTo(OpensongbookUI.SONGBOOKMANAGER);
 			}
 		});
@@ -45,6 +50,7 @@ public class Menu extends CustomComponent {
 		Button button = new Button("Logout", new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
+			    LOG.trace("Logout button clicked - closing session");
 				getUI().getSession().close();
 				getUI().getPage().setLocation(getLogoutPath());
 			}

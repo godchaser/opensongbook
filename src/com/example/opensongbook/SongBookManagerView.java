@@ -1,6 +1,5 @@
 package com.example.opensongbook;
 
-import com.example.opensongbook.UI.Menu;
 import com.example.opensongbook.data.SongSQLContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -14,6 +13,7 @@ import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class SongBookManagerView extends VerticalLayout implements View {
+    
     TwinColSelect songBookManagerTwinColSelect;
     SongBookManagerController controller;
 
@@ -41,7 +41,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
         setSizeFull();
         setSpacing(true);
         setMargin(true);
-        addComponent(new Menu());
+        addComponent(new NavigationMenu());
         songBookManagerTwinColSelect = new TwinColSelect("SongBookManager",
                 controller.getSQLContainer());
         songBookManagerTwinColSelect

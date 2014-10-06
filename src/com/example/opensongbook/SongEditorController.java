@@ -2,6 +2,9 @@ package com.example.opensongbook;
 
 import java.io.Serializable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.example.opensongbook.data.SongSQLContainer;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -16,17 +19,15 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class SongEditorController implements Serializable {
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
-    
-    static final Logger LOG = LoggerFactory.getLogger(SongEditorController.class);
-    
+
+    static final Logger LOG = LoggerFactory
+            .getLogger(SongEditorController.class);
+
     private SongEditorModel model;
     private SongEditorView songEditorView;
 
@@ -45,29 +46,30 @@ public class SongEditorController implements Serializable {
             switch (event.getButton().getId()) {
             // TODO: log which button is clicked
             case ("transposeButton"):
-                // transpose song
+                LOG.trace("Transpose song button clicked");
                 String transposedSong = model.chordTranspose(
                         (int) songEditorView.getSelectChordTransposition()
                                 .getValue(), (String) songEditorView
                                 .getSongTextInput().getValue());
-                // update the views
+                LOG.trace("Updating the view");
                 songEditorView.getSongTextInput().setValue(transposedSong);
                 break;
             case ("newSongButton"):
+                LOG.trace("New song button clicked");
                 break;
             case ("saveSongButton"):
+                LOG.trace("Export button clicked");
                 break;
             case ("deleteSongButton"):
+                LOG.trace("Delete button clicked");
                 break;
             case ("exportSongButton"):
-                String songText = (String) songEditorView.getSongTextInput()
-                        .getValue();
-                String songName = (String) songEditorView.getSongNameField()
-                        .getValue();
-                String songAuthor = (String) songEditorView
-                        .getSongAuthorField().getValue();
-                FileResource generatedFile = model.exportSong(songName,
-                        songAuthor, songText);
+                LOG.trace("Export button clicked");
+
+                Object selectedSong = songEditorView.getSelectedSong();
+                FileResource generatedFile = model.generateSongbook(
+                        selectedSong, songEditorView.getProgressComponents());
+
                 songEditorView.getDownloadExportedSongDocxLink().setResource(
                         generatedFile);
                 songEditorView.getFootbarLayout().addComponent(
@@ -84,7 +86,6 @@ public class SongEditorController implements Serializable {
                 songNameField, songAuthorField);
     }
 
-    // ValueChangeListener list = new Table.ValueChangeListener();
     private final class TableValueChangeListener implements ValueChangeListener {
         /**
          * 
@@ -104,17 +105,13 @@ public class SongEditorController implements Serializable {
         }
 
         public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-            // in multiselect mode, a Set of itemIds is returned,
-            // in singleselect mode the itemId is returned directly
-            // TODO: all this should be logged
-            //System.out
-            //        .println("songListTable " + this.songListTable.getValue());
-            
-            LOG.trace("songListTable " + this.songListTable.getValue());
-            
+
+            LOG.trace("Selected item (itemId) from table: "
+                    + this.songListTable.getValue());
+
             Item it = model.getSongSQLContainer().getItem(
                     this.songListTable.getValue());
-            // System.out.println("item: " + it);
+
             String lyrics = (String) it.getItemProperty(
                     SongSQLContainer.propertyIds.songLyrics.toString())
                     .getValue();
@@ -124,7 +121,11 @@ public class SongEditorController implements Serializable {
             String songAuthor = (String) it.getItemProperty(
                     SongSQLContainer.propertyIds.songAuthor.toString())
                     .getValue();
-            // System.out.println("lyrics  " +lyrics);
+
+            LOG.trace("Selected lyrics: " + lyrics);
+            LOG.trace("Selected title: " + songTitle);
+            LOG.trace("Selected author: " + songAuthor);
+
             songTextInput.setValue(lyrics);
             songNameField.setValue(songTitle);
             songAuthorField.setValue(songAuthor);
@@ -144,7 +145,10 @@ public class SongEditorController implements Serializable {
 
         @Override
         public void textChange(TextChangeEvent event) {
+            LOG.trace("Removing all container filters");
             model.getSongSQLContainer().removeAllContainerFilters();
+            LOG.trace("Using search filter for song lyrics string: "
+                    + event.getText());
             model.getSongSQLContainer().addContainerFilter(
                     SongSQLContainer.propertyIds.songLyrics.toString(),
                     event.getText(), true, false);

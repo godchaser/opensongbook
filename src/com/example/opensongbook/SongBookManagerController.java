@@ -1,5 +1,8 @@
 package com.example.opensongbook;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.example.opensongbook.data.SongSQLContainer;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.server.FileResource;
@@ -8,6 +11,10 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 public class SongBookManagerController {
+    
+    static final Logger LOG = LoggerFactory
+            .getLogger(SongBookManagerController.class);
+    
     SongBookManagerModel model;
     SongBookManagerView songBookManagerView;
 
@@ -40,6 +47,7 @@ public class SongBookManagerController {
                  */
                 break;
             case ("exportSongbookButton"):
+                LOG.trace("Export songbook button clicked");
                 Object selectedSongs = songBookManagerView.getSelectedSongs();
                 FileResource generatedFile = model
                         .generateSongbook(selectedSongs, songBookManagerView.getProgressComponents());
