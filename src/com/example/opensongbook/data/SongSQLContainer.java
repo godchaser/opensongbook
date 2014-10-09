@@ -32,6 +32,7 @@ public class SongSQLContainer {
             q1.setVersionColumn("VERSION");
             songContainer = new SQLContainer(q1);
             // TODO: maybe should also add song_revisions
+            songContainer.setAutoCommit(false);
         } catch (SQLException e) {
             e.printStackTrace();
         }

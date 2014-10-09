@@ -56,9 +56,16 @@ public class SongEditorController implements Serializable {
                 break;
             case ("newSongButton"):
                 LOG.trace("New song button clicked");
+                LOG.trace("Clearing input fields");
+                songEditorView.getSongNameField().setValue("");
+                songEditorView.getSongAuthorField().setValue("");
+                songEditorView.getSongTextInput().setValue("");
                 break;
             case ("saveSongButton"):
-                LOG.trace("Export button clicked");
+                LOG.trace("Save button clicked");
+                model.addSong(songEditorView.getSongNameField().getValue(),
+                        songEditorView.getSongTextInput().getValue(),
+                        songEditorView.getSongAuthorField().getValue());
                 break;
             case ("deleteSongButton"):
                 LOG.trace("Delete button clicked");

@@ -1,5 +1,7 @@
 package com.example.opensongbook;
 
+import java.io.Serializable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,8 +12,13 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-public class SongBookManagerController {
+public class SongBookManagerController implements Serializable {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     static final Logger LOG = LoggerFactory
             .getLogger(SongBookManagerController.class);
     

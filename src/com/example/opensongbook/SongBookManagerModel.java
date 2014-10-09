@@ -1,11 +1,17 @@
 package com.example.opensongbook;
 
+import java.io.Serializable;
+
 import com.example.opensongbook.data.DocumentWriter;
 import com.example.opensongbook.data.SongSQLContainer;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.server.FileResource;
 
-public class SongBookManagerModel {
+public class SongBookManagerModel implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private SQLContainer songSQLContainer;
 
     public SongBookManagerModel(SongSQLContainer songSQLContainerInstance) {

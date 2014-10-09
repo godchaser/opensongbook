@@ -33,3 +33,7 @@ CODE REFACTURING
 
 DOCX
 - maybe use font embeeding for monospace font - save template with embeeded font
+- generate song content
+
+BUTTON
+- save, delete songs is not implemented
