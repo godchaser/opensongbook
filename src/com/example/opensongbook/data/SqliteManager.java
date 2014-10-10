@@ -31,7 +31,7 @@ public class SqliteManager {
 					+ normalizeString(song.getTitle()) + "','"
 					+ normalizeString(song.getLyrics()) + "','"
 					+ normalizeString(song.getAuthor()) + "','" + "unknown"
-					+ "'," + "datetime())");
+					+ "'," + "datetime(), 0)");
 
 			System.out.println("song : " + song.getTitle()
 					+ " succesfully imported");
@@ -63,15 +63,12 @@ public class SqliteManager {
 			statement.setQueryTimeout(30);
 			// datetime()
 			// ID, songTitle, songLyrics, songAuthor, modifiedBy, modifiedDate
-			statement.executeUpdate("insert into songs values(null, " +
-					"'songTitle',  " + 
-			        "'songLyrics', " + 
-					"'songAuthor', " +
-					"'modifiedBy', " + 
-					"datetime())");
+			statement.executeUpdate("insert into songs values(null, "
+					+ "'songTitle',  " + "'songLyrics', " + "'songAuthor', "
+					+ "'modifiedBy', " + "datetime())");
 			statement
 					.executeUpdate("update songs set songLyrics='songLyrics2', modifiedDate=datetime() where songTitle='songTitle'");
-			
+
 			ResultSet rs = statement.executeQuery("select * from songs");
 			System.out.println("songs: ");
 			while (rs.next()) {
@@ -121,7 +118,7 @@ public class SqliteManager {
 			// ID, songTitle, songLyrics, songAuthor, modifiedBy, modifiedDate
 			statement.executeUpdate("insert into songs values(null, '"
 					+ songTitle + "','" + songLyrics + "','" + songAuthor
-					+ "','" + modifiedBy + "'," + "datetime())");
+					+ "','" + modifiedBy + "'," + "datetime()," + "0)");
 
 			ResultSet rs = statement.executeQuery("select * from songs");
 			System.out.println("songs: ");
@@ -171,13 +168,12 @@ public class SqliteManager {
 			statement.executeUpdate("drop table if exists song_revisions");
 
 			// creating main table for storing songs
-			statement
-			// .executeUpdate("create virtual table songs using fts3("
-					.executeUpdate("create table songs("
-							+ "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
-							+ "songTitle text, " + "songLyrics text, "
-							+ "songAuthor text, " + "modifiedBy text, "
-							+ "modifiedDate text);");
+			statement.executeUpdate("create table songs("
+					+ "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+					+ "songTitle text, " + "songLyrics text, "
+					+ "songAuthor text, " + "modifiedBy text, "
+					+ "modifiedDate text, "
+					+ "version INTEGER DEFAULT 0 NOT NULL);");
 			// creating revision table for storing song revisions
 			statement.executeUpdate("create table song_revisions("
 					+ "lastRevisionID integer, " + "songTitle text, "

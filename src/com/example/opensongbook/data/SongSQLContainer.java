@@ -29,7 +29,7 @@ public class SongSQLContainer {
 
             TableQuery q1 = new TableQuery("songs",
                     dbHelper.getConnectionPool());
-            q1.setVersionColumn("VERSION");
+            q1.setVersionColumn("version");
             songContainer = new SQLContainer(q1);
             // TODO: maybe should also add song_revisions
             songContainer.setAutoCommit(false);
