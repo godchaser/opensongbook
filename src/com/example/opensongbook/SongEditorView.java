@@ -160,7 +160,7 @@ public class SongEditorView extends VerticalLayout implements View {
         songListTable.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
         songListTable.setSelectable(true);
         songListTable.setEditable(false);
-        songListTable.setNullSelectionAllowed(false);
+        // songListTable.setNullSelectionAllowed(false);
         songListTable.setVisibleColumns(new Object[] { songListTable
                 .getVisibleColumns()[1] });
 
@@ -199,6 +199,22 @@ public class SongEditorView extends VerticalLayout implements View {
 
     public Link getDownloadExportedSongDocxLink() {
         return downloadExportedSongDocxLink;
+    }
+
+    public TextField getSearchSongsField() {
+        return searchSongsField;
+    }
+
+    public Table getSongListTable() {
+        return songListTable;
+    }
+
+    public void clearSearchAndSongFields() {
+        getSearchSongsField().setValue("");
+        getSongListTable().select(null);
+        getSongNameField().setValue("");
+        getSongAuthorField().setValue("");
+        getSongTextInput().setValue("");
     }
 
     @Override

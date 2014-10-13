@@ -57,9 +57,7 @@ public class SongEditorController implements Serializable {
             case ("newSongButton"):
                 LOG.trace("New song button clicked");
                 LOG.trace("Clearing input fields");
-                songEditorView.getSongNameField().setValue("");
-                songEditorView.getSongAuthorField().setValue("");
-                songEditorView.getSongTextInput().setValue("");
+                songEditorView.clearSearchAndSongFields();
                 break;
             case ("saveSongButton"):
                 LOG.trace("Save button clicked");
@@ -69,6 +67,7 @@ public class SongEditorController implements Serializable {
                 break;
             case ("deleteSongButton"):
                 LOG.trace("Delete button clicked");
+                model.deleteSong(songEditorView.getSongListTable().getValue());
                 break;
             case ("exportSongButton"):
                 LOG.trace("Export button clicked");
@@ -112,30 +111,33 @@ public class SongEditorController implements Serializable {
         }
 
         public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+            if (this.songListTable.getValue() != null) {
+                LOG.trace("Selected item (itemId) from table: "
+                        + this.songListTable.getValue());
 
-            LOG.trace("Selected item (itemId) from table: "
-                    + this.songListTable.getValue());
+                Item it = model.getSongSQLContainer().getItem(
+                        this.songListTable.getValue());
 
-            Item it = model.getSongSQLContainer().getItem(
-                    this.songListTable.getValue());
+                String lyrics = (String) it.getItemProperty(
+                        SongSQLContainer.propertyIds.songLyrics.toString())
+                        .getValue();
+                String songTitle = (String) it.getItemProperty(
+                        SongSQLContainer.propertyIds.songTitle.toString())
+                        .getValue();
+                String songAuthor = (String) it.getItemProperty(
+                        SongSQLContainer.propertyIds.songAuthor.toString())
+                        .getValue();
 
-            String lyrics = (String) it.getItemProperty(
-                    SongSQLContainer.propertyIds.songLyrics.toString())
-                    .getValue();
-            String songTitle = (String) it.getItemProperty(
-                    SongSQLContainer.propertyIds.songTitle.toString())
-                    .getValue();
-            String songAuthor = (String) it.getItemProperty(
-                    SongSQLContainer.propertyIds.songAuthor.toString())
-                    .getValue();
+                LOG.trace("Selected lyrics: " + lyrics);
+                LOG.trace("Selected title: " + songTitle);
+                LOG.trace("Selected author: " + songAuthor);
 
-            LOG.trace("Selected lyrics: " + lyrics);
-            LOG.trace("Selected title: " + songTitle);
-            LOG.trace("Selected author: " + songAuthor);
-
-            songTextInput.setValue(lyrics);
-            songNameField.setValue(songTitle);
-            songAuthorField.setValue(songAuthor);
+                songTextInput.setValue(lyrics);
+                songNameField.setValue(songTitle);
+                songAuthorField.setValue(songAuthor);
+            } else {
+                LOG.trace("Nothing selected in search table");
+            }
         }
     }
 
