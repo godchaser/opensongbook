@@ -2,7 +2,6 @@ package com.example.opensongbook;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,13 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.example.opensongbook.data.ChordTransposer;
 import com.example.opensongbook.data.DocumentWriter;
 import com.example.opensongbook.data.SongSQLContainer;
-import com.sun.org.apache.regexp.internal.recompile;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.sqlcontainer.RowId;
-import com.vaadin.data.util.sqlcontainer.RowItem;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
-import com.vaadin.data.util.sqlcontainer.TemporaryRowId;
 import com.vaadin.server.FileResource;
 
 public class SongEditorModel implements Serializable {

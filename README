@@ -17,9 +17,7 @@ TESTING
 - should use testng- write TC to test if chord lines from all songs are recognized
 - maybe use selenium for basic end-end TC
 
-
 LOGGING
-- set up the logging interface - logback (sl4j)
 - možda ne koristiti triggere - jer sam updejtam tablicu, a ne netko drugi
 
 ANT
@@ -35,5 +33,9 @@ DOCX
 - maybe use font embeeding for monospace font - save template with embeeded font
 - generate song content
 
-BUTTON
-- save, delete songs is not implemented
+USER PROVISIONING
+- create, add, and modify user and login session
+
+BUG
+- search filter ne radi kako treba - searhaj Tko će uzići
+
