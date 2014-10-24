@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project basedir="." default="package" xmlns:ivy="antlib:org.apache.ivy.ant" name="Build script for Opensongbook Vaadin 7 projects">
+<project basedir="." default="package" xmlns:ivy="antlib:org.apache.ivy.ant" name="Build script for ${theme.name} Vaadin 7 projects">
 
     <loadproperties srcfile="build.properties" />
     <property name="workdir" value="${artifacts}/work" />
@@ -38,7 +38,7 @@
 
     <!-- <echo>${toString:classpath}</echo>-->
     <target name="compile-project" depends="compile-theme">
-        <echo message="Compiling opensongbook project" />
+        <echo message="Compiling ${theme.name} project" />
         <mkdir dir="${workdir}/WEB-INF/classes" />
         <javac destdir="${workdir}/WEB-INF/classes" debug="${compile.debug}" includeantruntime="no">
             <src path="${sources}" />
