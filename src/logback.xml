@@ -7,7 +7,7 @@
     </layout>
   </appender>
    
-  <logger name="com.example.opensongbook" level="TRACE"/>
+  <logger name="org.duckdns.valci.opensongbook" level="TRACE"/>
    
   <root level="debug">
     <appender-ref ref="STDOUT" />
