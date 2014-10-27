@@ -23,6 +23,8 @@ public class SongBookManagerView extends VerticalLayout implements View {
 
     ProgressBar songBookExportProgress;
     Label songBookExportStatus;
+    
+    int songBookManagerRows = 30;
 
     public HorizontalLayout getFootbarLayout() {
         return footbarLayout;
@@ -48,7 +50,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
         songBookManagerTwinColSelect
                 .setItemCaptionPropertyId(SongSQLContainer.propertyIds.songTitle
                         .toString());
-        ;
+        songBookManagerTwinColSelect.setRows(songBookManagerRows);
         addComponent(songBookManagerTwinColSelect);
         Button exportButton = new Button("Export songbook");
         exportButton.setId("exportSongbookButton");

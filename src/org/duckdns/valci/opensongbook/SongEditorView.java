@@ -46,6 +46,8 @@ public class SongEditorView extends VerticalLayout implements View {
 
     TextField searchSongsField;
     Table songListTable;
+    
+    int songEditorRows = 30;
 
     public SongEditorView(SongSQLContainer songSQLContainerInstance) {
         this.controller = new SongEditorController(this,
@@ -57,44 +59,43 @@ public class SongEditorView extends VerticalLayout implements View {
         setSizeFull();
         setSpacing(true);
         setMargin(true);
-        //setSizeUndefined();
-        setHeight("100%");
+        // setSizeUndefined();
+        // setHeight("100%");
         addComponent(new NavigationMenu());
 
-        // this are song editor components
         horizontalSongFieldLayout = new HorizontalLayout();
+
+        // ***********SONG FIELDS COMPONENTS*****************
 
         songNameField = new TextField();
         songNameField.setCaption("Name");
         // songTextInput.setSizeFull();
         songNameField.setId("songNameField");
-        //songNameField.setWidth("15%");
+        // songNameField.setWidth("15%");
 
         songAuthorField = new TextField();
         songAuthorField.setCaption("Author");
         // songTextInput.setSizeFull();
         songAuthorField.setId("songAuthorField");
-        //songAuthorField.setWidth("15%");
+        // songAuthorField.setWidth("15%");
 
         horizontalSongFieldLayout.addComponent(songNameField);
         horizontalSongFieldLayout.addComponent(songAuthorField);
-        //horizontalSongFieldLayout.setSizeUndefined();
         horizontalSongFieldLayout.setSpacing(true);
-        horizontalSongFieldLayout.setSizeFull();
+        //horizontalSongFieldLayout.setSizeFull();
         addComponent(horizontalSongFieldLayout);
+
+        // ***********SONG EDITOR LAYOUT COMPONENTS*****************
 
         horizontalSongTextLayout = new HorizontalLayout();
         horizontalSongTextLayout.setSpacing(true);
-        horizontalSongTextLayout.setSizeFull();
-
-        songTextInput = new TextArea();
-        // songTextInput.setSizeFull();
-        songTextInput.setCaption("Editor");
-        songTextInput.setId("songTextInput");
-        songTextInput.setStyleName("monoSpaceTextArea");
+        horizontalSongTextLayout.setHeight("80%");
+        horizontalSongTextLayout.setWidth("100%");
 
         verticalSongTextSidebarLayout = new VerticalLayout();
         verticalSongTextSidebarLayout.setSpacing(true);
+
+        // ***********SONG BUTTONS COMPONENTS*****************
 
         selectChordTransposition = new ListSelect("Chord transpose");
         for (int i = -7; i < 7; i++) {
@@ -129,15 +130,58 @@ public class SongEditorView extends VerticalLayout implements View {
         verticalSongTextSidebarLayout.addComponent(saveSongButton);
         verticalSongTextSidebarLayout.addComponent(deleteSongButton);
 
-        createSongSearchComponents(horizontalSongTextLayout, songTextInput,
-                songNameField, songAuthorField);
-        //horizontalSongTextLayout.setHeight("70%");
-        //horizontalSongTextLayout.setWidth("70%");
+        // ***********SEARCH COMPONENTS*****************
+
+        // I need to make instance of input component while I need reference for update from search box
+        songTextInput = new TextArea();
+
+        searchSongsField = new TextField("Search");
+        searchSongsField.setId("searchSongsField");
+        searchSongsField.setTextChangeEventMode(TextChangeEventMode.LAZY);
+        searchSongsField.setTextChangeTimeout(200);
+        searchSongsField.addTextChangeListener(controller
+                .getSearchFieldTextChangeListener());
+        searchSongsField.setSizeFull();
+
+        songListTable = new Table(null, controller.getSQLContainer());
+        songListTable.setId("songListTable");
+        songListTable.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
+        songListTable.setSelectable(true);
+        songListTable.setEditable(false);
+        songListTable.setSizeFull();
+        // songListTable.setNullSelectionAllowed(false);
+        songListTable.setVisibleColumns(new Object[] { songListTable
+                .getVisibleColumns()[1] });
+
+        songListTable.addValueChangeListener(this.controller
+                .getTableValueChangeListener(songListTable, songTextInput,
+                        songNameField, songAuthorField));
+
+        songSearchLayout = new VerticalLayout();
+        songSearchLayout.addComponent(searchSongsField);
+        songSearchLayout.addComponent(songListTable);
+        horizontalSongTextLayout.addComponent(songSearchLayout);
+
+        // ***********SONG TEXT INPUT COMPONENTS*****************
+        songTextInput.setCaption("Editor");
+        songTextInput.setId("songTextInput");
+        songTextInput.setStyleName("monoSpaceTextArea");
+        songTextInput.setSizeFull();
+        songTextInput.setRows(songEditorRows);
+
+        // ***********SONG EDITOR LAYOUT *****************
+
         horizontalSongTextLayout.addComponent(songTextInput);
         horizontalSongTextLayout.addComponent(verticalSongTextSidebarLayout);
+        horizontalSongTextLayout.setExpandRatio(songSearchLayout, 1);
+        horizontalSongTextLayout.setExpandRatio(songTextInput, 2);
+        songTextInput.setSizeFull();
+        horizontalSongTextLayout.setExpandRatio(verticalSongTextSidebarLayout,
+                1);
         addComponent(horizontalSongTextLayout);
 
-        // this are footbar components
+        // ***********SONG FOOTBAR COMPONENTS*****************
+
         footbarLayout = new HorizontalLayout();
         footbarLayout.setSpacing(true);
         exportSongButton = new Button("Export song to docx");
@@ -149,41 +193,6 @@ public class SongEditorView extends VerticalLayout implements View {
         downloadExportedSongDocxLink.setCaption("exported song (docx)");
         downloadExportedSongDocxLink.setId("downloadExportedSongDocxLink");
         addComponent(footbarLayout);
-    }
-
-    public void createSongSearchComponents(
-            HorizontalLayout horizontalSongTextLayout, TextArea songTextInput,
-            TextField songNameField, TextField songAuthorField) {
-
-        searchSongsField = new TextField("Search");
-        searchSongsField.setId("searchSongsField");
-        searchSongsField.setTextChangeEventMode(TextChangeEventMode.LAZY);
-        searchSongsField.setTextChangeTimeout(200);
-        //searchSongsField.setWidth("20%");
-        searchSongsField.addTextChangeListener(controller
-                .getSearchFieldTextChangeListener());
-
-        songListTable = new Table(null, controller.getSQLContainer());
-        songListTable.setId("songListTable");
-        songListTable.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
-        songListTable.setSelectable(true);
-        songListTable.setEditable(false);
-        // songListTable.setNullSelectionAllowed(false);
-        songListTable.setVisibleColumns(new Object[] { songListTable
-                .getVisibleColumns()[1] });
-
-        songListTable.addValueChangeListener(this.controller
-                .getTableValueChangeListener(songListTable, songTextInput,
-                        songNameField, songAuthorField));
-        //songListTable.setWidth("20%");
-        //songListTable.setHeight("70%");
-        //songTextInput.setWidth("80%");
-        //songTextInput.setHeight("100%");
-
-        songSearchLayout = new VerticalLayout();
-        songSearchLayout.addComponent(searchSongsField);
-        songSearchLayout.addComponent(songListTable);
-        horizontalSongTextLayout.addComponent(songSearchLayout);
     }
 
     public HorizontalLayout getFootbarLayout() {

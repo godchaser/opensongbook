@@ -1,65 +1,71 @@
 package org.duckdns.valci.opensongbook;
 
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalLayout;
-
-@SuppressWarnings("serial")
 public class NavigationMenu extends CustomComponent {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     static final Logger LOG = LoggerFactory.getLogger(NavigationMenu.class);
-	public NavigationMenu() {
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.addComponent(songEditorButton());
-		layout.addComponent(songBookManagerButton());
-		layout.addComponent(logoutButton());
-		layout.setSizeUndefined();
-		layout.setSpacing(true);
-		setSizeUndefined();
-		setCompositionRoot(layout);
-	}
 
-	private Button songEditorButton() {
-		Button button = new Button("Song Editor", new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-			    LOG.trace("Song Editor navigation button clicked");
-				getUI().getNavigator().navigateTo(OpensongbookUI.SONGEDITOR);
-			}
-		});
-		button.setId("songEditorButton");
-		return button;
-	}
+    public NavigationMenu() {
+        MenuBar navigationMenu = new MenuBar();
+        navigationMenu.setId("NavigationMenu");
+        navigationMenu.setWidth("100%");
+        navigationMenu.addItem("Song Editor", menuSongEditorCommand);
+        navigationMenu.addItem("SongBook Manager", menuSongBookManagerCommand);
+        navigationMenu.addItem("Logout", menuLogoutCommand);
+        setSizeUndefined();
+        setCompositionRoot(navigationMenu);
+    }
 
-	private Button songBookManagerButton() {
-		Button button = new Button("Songbook Manager", new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-	             LOG.trace("Songbook Manager navigation button clicked");
-				getUI().getNavigator().navigateTo(OpensongbookUI.SONGBOOKMANAGER);
-			}
-		});
-		button.setId("songBookManagerButton");
-		return button;
-	}
+    private final Command menuSongEditorCommand = new Command() {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
 
-	private Button logoutButton() {
-		Button button = new Button("Logout", new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-			    LOG.trace("Logout button clicked - closing session");
-				getUI().getSession().close();
-				getUI().getPage().setLocation(getLogoutPath());
-			}
-		});
-        button.setId("logoutButton");
-		return button;
-	}
+        @Override
+        public void menuSelected(final MenuItem selectedItem) {
+            LOG.trace("Song Editor navigation button clicked");
+            getUI().getNavigator().navigateTo(OpensongbookUI.SONGEDITOR);
+        }
+    };
+    private final Command menuSongBookManagerCommand = new Command() {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
 
-	private String getLogoutPath() {
-		return getUI().getPage().getLocation().getPath();
-	}
-}
+        @Override
+        public void menuSelected(final MenuItem selectedItem) {
+            LOG.trace("Songbook Manager navigation button clicked");
+            getUI().getNavigator().navigateTo(OpensongbookUI.SONGBOOKMANAGER);
+        }
+    };
+    private final Command menuLogoutCommand = new Command() {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void menuSelected(final MenuItem selectedItem) {
+            LOG.trace("Logout button clicked - closing session");
+            getUI().getSession().close();
+            getUI().getPage().setLocation(getLogoutPath());
+        }
+    };
+
+    private String getLogoutPath() {
+        return getUI().getPage().getLocation().getPath();
+    }
+
+};
