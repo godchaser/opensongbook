@@ -102,7 +102,8 @@ public class DocumentWriter {
                             .getItem(songitemId)
                             .getItemProperty(
                                     SongSQLContainer.propertyIds.songLyrics
-                                            .toString()).getValue().toString());
+                                            .toString()).getValue().toString().replaceAll("\n","\r\n"));
+        // this is fix to use windows line endings CRLF instead of linux LF
         }
         // tmpRunHeader.addBreak(BreakType.PAGE);
 
