@@ -28,6 +28,7 @@ ANDROID
 
 CODE REFACTURING
 - see examples for MVP
+- IMPORTANT: SHOULD USE FORMGROPS FOR BINDING FIELDS AND DATA
 
 DOCX
 - maybe use font embeeding for monospace font - save template with embeeded font

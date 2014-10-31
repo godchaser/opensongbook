@@ -46,7 +46,7 @@ public class SongEditorView extends VerticalLayout implements View {
 
     TextField searchSongsField;
     Table songListTable;
-    
+
     int songEditorRows = 30;
 
     public SongEditorView(SongSQLContainer songSQLContainerInstance) {
@@ -82,7 +82,7 @@ public class SongEditorView extends VerticalLayout implements View {
         horizontalSongFieldLayout.addComponent(songNameField);
         horizontalSongFieldLayout.addComponent(songAuthorField);
         horizontalSongFieldLayout.setSpacing(true);
-        //horizontalSongFieldLayout.setSizeFull();
+        // horizontalSongFieldLayout.setSizeFull();
         addComponent(horizontalSongFieldLayout);
 
         // ***********SONG EDITOR LAYOUT COMPONENTS*****************
@@ -110,19 +110,19 @@ public class SongEditorView extends VerticalLayout implements View {
 
         transposeButton = new Button("Transpose");
         transposeButton.setId("transposeButton");
-        transposeButton.addClickListener(controller.buttonListener);
+        transposeButton.addClickListener(controller.getButtonListener());
 
         newSongButton = new Button("New song");
         newSongButton.setId("newSongButton");
-        newSongButton.addClickListener(controller.buttonListener);
+        newSongButton.addClickListener(controller.getButtonListener());
 
         saveSongButton = new Button("Save song");
         saveSongButton.setId("saveSongButton");
-        saveSongButton.addClickListener(controller.buttonListener);
+        saveSongButton.addClickListener(controller.getButtonListener());
 
         deleteSongButton = new Button("Delete song");
         deleteSongButton.setId("deleteSongButton");
-        deleteSongButton.addClickListener(controller.buttonListener);
+        deleteSongButton.addClickListener(controller.getButtonListener());
 
         verticalSongTextSidebarLayout.addComponent(selectChordTransposition);
         verticalSongTextSidebarLayout.addComponent(transposeButton);
@@ -132,7 +132,8 @@ public class SongEditorView extends VerticalLayout implements View {
 
         // ***********SEARCH COMPONENTS*****************
 
-        // I need to make instance of input component while I need reference for update from search box
+        // I need to make instance of input component while I need reference for
+        // update from search box
         songTextInput = new TextArea();
 
         searchSongsField = new TextField("Search");
@@ -186,7 +187,7 @@ public class SongEditorView extends VerticalLayout implements View {
         footbarLayout.setSpacing(true);
         exportSongButton = new Button("Export song to docx");
         exportSongButton.setId("exportSongButton");
-        exportSongButton.addClickListener(controller.buttonListener);
+        exportSongButton.addClickListener(controller.getButtonListener());
         footbarLayout.addComponent(exportSongButton);
 
         downloadExportedSongDocxLink = new Link();

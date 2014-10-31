@@ -2,7 +2,6 @@ package org.duckdns.valci.opensongbook;
 
 import javax.servlet.annotation.WebServlet;
 
-import org.duckdns.valci.opensongbook.data.SongDatabaseConnector;
 import org.duckdns.valci.opensongbook.data.SongSQLContainer;
 
 import com.vaadin.annotations.Theme;
@@ -21,7 +20,6 @@ public class OpensongbookUI extends UI {
     public Navigator navigator;
     VerticalLayout layout;
 
-    SongDatabaseConnector songDatabaseConnector;
     SongSQLContainer songSQLContainerInstance;
 
     public static final String SONGBOOKMANAGER = "songbookmanager";
@@ -38,7 +36,6 @@ public class OpensongbookUI extends UI {
         // setContent(mainWindow.drawComponents());
         // MainDashboard mainWindow = new MainDashboard();
         // setContent(mainWindow.buildMainView());
-        songDatabaseConnector = new SongDatabaseConnector();
         songSQLContainerInstance = new SongSQLContainer();
 
         layout = new VerticalLayout();

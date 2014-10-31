@@ -29,57 +29,60 @@ public class SongEditorController implements Serializable {
             .getLogger(SongEditorController.class);
 
     private SongEditorModel model;
-    private SongEditorView songEditorView;
+    private SongEditorView view;
+
+    private SearchFieldTextChangeListener searchFieldTextChangeListener;
+    private ClickListener buttonListener;
 
     public SongEditorController(SongEditorView songEditorView,
             SongSQLContainer songSQLContainerInstance) {
         this.model = new SongEditorModel(songSQLContainerInstance);
-        this.songEditorView = songEditorView;
+        this.view = songEditorView;
+        this.setSearchFieldTextChangeListener(new SearchFieldTextChangeListener());
+        this.setButtonListener(new ButtonClickListener());
     }
 
     // this is listener for all button features
-    ClickListener buttonListener = new Button.ClickListener() {
+    private final class ButtonClickListener implements Button.ClickListener {
 
         private static final long serialVersionUID = 1L;
 
         public void buttonClick(ClickEvent event) {
             switch (event.getButton().getId()) {
-            // TODO: log which button is clicked
             case ("transposeButton"):
                 LOG.trace("Transpose song button clicked");
-                String transposedSong = model.chordTranspose(
-                        (int) songEditorView.getSelectChordTransposition()
-                                .getValue(), (String) songEditorView
-                                .getSongTextInput().getValue());
+                String transposedSong = model.chordTranspose((int) view
+                        .getSelectChordTransposition().getValue(),
+                        (String) view.getSongTextInput().getValue());
                 LOG.trace("Updating the view");
-                songEditorView.getSongTextInput().setValue(transposedSong);
+                view.getSongTextInput().setValue(transposedSong);
                 break;
             case ("newSongButton"):
                 LOG.trace("New song button clicked");
                 LOG.trace("Clearing input fields");
-                songEditorView.clearSearchAndSongFields();
+                view.clearSearchAndSongFields();
                 break;
             case ("saveSongButton"):
                 LOG.trace("Save button clicked");
-                model.addSong(songEditorView.getSongNameField().getValue(),
-                        songEditorView.getSongTextInput().getValue(),
-                        songEditorView.getSongAuthorField().getValue());
+                model.addSong(view.getSongNameField().getValue(), view
+                        .getSongTextInput().getValue(), view
+                        .getSongAuthorField().getValue());
                 break;
             case ("deleteSongButton"):
                 LOG.trace("Delete button clicked");
-                model.deleteSong(songEditorView.getSongListTable().getValue());
+                model.deleteSong(view.getSongListTable().getValue());
                 break;
             case ("exportSongButton"):
                 LOG.trace("Export button clicked");
 
-                Object selectedSong = songEditorView.getSelectedSong();
+                Object selectedSong = view.getSelectedSong();
                 FileResource generatedFile = model.generateSongbook(
-                        selectedSong, songEditorView.getProgressComponents());
+                        selectedSong, view.getProgressComponents());
 
-                songEditorView.getDownloadExportedSongDocxLink().setResource(
+                view.getDownloadExportedSongDocxLink().setResource(
                         generatedFile);
-                songEditorView.getFootbarLayout().addComponent(
-                        songEditorView.getDownloadExportedSongDocxLink());
+                view.getFootbarLayout().addComponent(
+                        view.getDownloadExportedSongDocxLink());
                 break;
             }
         }
@@ -141,10 +144,6 @@ public class SongEditorController implements Serializable {
         }
     }
 
-    public SearchFieldTextChangeListener getSearchFieldTextChangeListener() {
-        return new SearchFieldTextChangeListener();
-    }
-
     private final class SearchFieldTextChangeListener implements
             TextChangeListener {
         /**
@@ -163,6 +162,23 @@ public class SongEditorController implements Serializable {
                     event.getText(), true, false);
 
         }
+    }
+
+    public void setSearchFieldTextChangeListener(
+            SearchFieldTextChangeListener searchFieldTextChangeListener) {
+        this.searchFieldTextChangeListener = searchFieldTextChangeListener;
+    }
+
+    public ClickListener getButtonListener() {
+        return this.buttonListener;
+    }
+
+    public void setButtonListener(ClickListener buttonListener) {
+        this.buttonListener = buttonListener;
+    }
+
+    public SearchFieldTextChangeListener getSearchFieldTextChangeListener() {
+        return this.searchFieldTextChangeListener;
     }
 
     public SQLContainer getSQLContainer() {
