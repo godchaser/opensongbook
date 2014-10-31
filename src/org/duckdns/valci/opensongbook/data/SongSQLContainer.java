@@ -14,7 +14,7 @@ public class SongSQLContainer {
         ID, songTitle, songLyrics, songAuthor, modifiedBy, modifiedDate;
     }
 
-    public SQLContainer getSongContainer() {
+    public SQLContainer getContainer() {
         return songContainer;
     }
 

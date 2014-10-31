@@ -16,7 +16,7 @@ public class SongBookManagerModel implements Serializable {
     private SQLContainer songSQLContainer;
 
     public SongBookManagerModel(SongSQLContainer songSQLContainerInstance) {
-        this.songSQLContainer = songSQLContainerInstance.getSongContainer();
+        this.songSQLContainer = songSQLContainerInstance.getContainer();
     }
 
     public SQLContainer getSongSQLContainer() {

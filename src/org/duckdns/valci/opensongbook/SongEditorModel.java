@@ -27,7 +27,7 @@ public class SongEditorModel implements Serializable {
     private SQLContainer songSQLContainer;
 
     public SongEditorModel(SongSQLContainer songSQLContainerInstance) {
-        this.songSQLContainer = songSQLContainerInstance.getSongContainer();
+        this.songSQLContainer = songSQLContainerInstance.getContainer();
         sortSQLContainterAlphabetical();
     }
 
