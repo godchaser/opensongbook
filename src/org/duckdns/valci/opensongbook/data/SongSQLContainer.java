@@ -1,12 +1,17 @@
 package org.duckdns.valci.opensongbook.data;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.data.util.sqlcontainer.query.TableQuery;
 
-public class SongSQLContainer {
+public class SongSQLContainer implements Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private DatabaseHelper dbHelper = null;
     private SQLContainer songContainer = null;
 
