@@ -14,7 +14,7 @@ import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class SongBookManagerView extends VerticalLayout implements View {
-    
+
     TwinColSelect songBookManagerTwinColSelect;
     SongBookManagerController controller;
 
@@ -23,7 +23,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
 
     ProgressBar songBookExportProgress;
     Label songBookExportStatus;
-    
+
     int songBookManagerRows = 30;
 
     public HorizontalLayout getFootbarLayout() {
@@ -34,9 +34,8 @@ public class SongBookManagerView extends VerticalLayout implements View {
         return downloadExportedSongDocxLink;
     }
 
-    public SongBookManagerView(SongSQLContainer songSQLContainerInstance) {
-        this.controller = new SongBookManagerController(this,
-                songSQLContainerInstance);
+    public SongBookManagerView() {
+        this.controller = new SongBookManagerController(this);
         createSongBookManagerComponents();
     }
 
@@ -45,11 +44,8 @@ public class SongBookManagerView extends VerticalLayout implements View {
         setSpacing(true);
         setMargin(true);
         addComponent(new NavigationMenu());
-        songBookManagerTwinColSelect = new TwinColSelect("SongBookManager",
-                controller.getSQLContainer());
-        songBookManagerTwinColSelect
-                .setItemCaptionPropertyId(SongSQLContainer.propertyIds.songTitle
-                        .toString());
+        songBookManagerTwinColSelect = new TwinColSelect("SongBookManager", controller.getSQLContainer());
+        songBookManagerTwinColSelect.setItemCaptionPropertyId(SongSQLContainer.propertyIds.songTitle.toString());
         songBookManagerTwinColSelect.setRows(songBookManagerRows);
         addComponent(songBookManagerTwinColSelect);
         Button exportButton = new Button("Export songbook");
@@ -75,18 +71,17 @@ public class SongBookManagerView extends VerticalLayout implements View {
         Object selectedSongs = songBookManagerTwinColSelect.getValue();
         return selectedSongs;
     }
-    
-    public Object[] getProgressComponents(){
+
+    public Object[] getProgressComponents() {
         Object[] progressComponents = new Object[2];
-        progressComponents[0]=songBookExportStatus;
-        progressComponents[1]=songBookExportProgress;
+        progressComponents[0] = songBookExportStatus;
+        progressComponents[1] = songBookExportProgress;
         return progressComponents;
     }
 
     @Override
     public void enter(ViewChangeEvent event) {
         // TODO Auto-generated method stub
-
     }
 
 }

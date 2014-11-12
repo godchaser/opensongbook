@@ -26,8 +26,7 @@ public class DocumentWriter {
     static final Logger LOG = LoggerFactory.getLogger(DocumentWriter.class);
     FileResource generatedFile;
 
-    public void writeSong(XWPFDocument document, String songTitle,
-            String songLyrics) {
+    public void writeSong(XWPFDocument document, String songTitle, String songLyrics) {
         LOG.trace("Exporting song: " + songTitle);
         // Create Header
         XWPFParagraph tmpHeader = document.createParagraph();
@@ -52,22 +51,17 @@ public class DocumentWriter {
         tmpRun.addBreak(BreakType.PAGE);
     }
 
-    public FileResource newSongbookWordDoc(String filename,
-            final SQLContainer sqlContainter, Object selectedSongs,
+    public FileResource newSongbookWordDoc(String filename, final SQLContainer sqlContainter, Object selectedSongs,
             final Object[] progressComponents) throws Exception {
 
         // XWPFDocument template = new XWPFDocument(new FileInputStream(new
         // File("test\\template.dotx")));
         // Find the application directory
         // final FileResource generatedFile;
-        final String basepath = VaadinService.getCurrent().getBaseDirectory()
-                .getAbsolutePath();
-        final String outputFile = basepath + "/WEB-INF/resources/" + "filename"
-                + ".docx";
-        FileResource templateFile = new FileResource(new File(basepath
-                + "/WEB-INF/resources/template.dotx"));
-        XWPFDocument template = new XWPFDocument(new FileInputStream(
-                templateFile.getSourceFile()));
+        final String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+        final String outputFile = basepath + "/WEB-INF/resources/" + "filename" + ".docx";
+        FileResource templateFile = new FileResource(new File(basepath + "/WEB-INF/resources/template.dotx"));
+        XWPFDocument template = new XWPFDocument(new FileInputStream(templateFile.getSourceFile()));
 
         final XWPFDocument document = new XWPFDocument();
         // copy styles from template to new doc
@@ -90,20 +84,15 @@ public class DocumentWriter {
         }
 
         for (RowId songitemId : selectedSongsRowIds) {
-            LOG.trace("Now exporting songId: "+ songitemId);
+            LOG.trace("Now exporting songId: " + songitemId);
             writeSong(
                     document,
-                    sqlContainter
-                            .getItem(songitemId)
-                            .getItemProperty(
-                                    SongSQLContainer.propertyIds.songTitle
-                                            .toString()).getValue().toString(),
-                    sqlContainter
-                            .getItem(songitemId)
-                            .getItemProperty(
-                                    SongSQLContainer.propertyIds.songLyrics
-                                            .toString()).getValue().toString().replaceAll("\n","\r\n"));
-        // this is fix to use windows line endings CRLF instead of linux LF
+                    sqlContainter.getItem(songitemId)
+                            .getItemProperty(SongSQLContainer.propertyIds.songTitle.toString()).getValue().toString(),
+                    sqlContainter.getItem(songitemId)
+                            .getItemProperty(SongSQLContainer.propertyIds.songLyrics.toString()).getValue().toString()
+                            .replaceAll("\n", "\r\n"));
+            // this is fix to use windows line endings CRLF instead of linux LF
         }
         // tmpRunHeader.addBreak(BreakType.PAGE);
 
@@ -125,57 +114,44 @@ public class DocumentWriter {
         generatedFile = new FileResource(new File(outputFile));
 
         /*
-         * // A thread to do some work class WorkThread extends Thread { //
-         * Volatile because read in another thread in access() volatile double
-         * current = 0.0;
+         * // A thread to do some work class WorkThread extends Thread { // Volatile because read in another thread in
+         * access() volatile double current = 0.0;
          * 
-         * @Override public void run() { // Count up until 1.0 is reached while
-         * (current < 1.0) { current += 0.01;
+         * @Override public void run() { // Count up until 1.0 is reached while (current < 1.0) { current += 0.01;
          * 
-         * // Do some "heavy work" for (RowId songitemId : selectedSongsRowIds)
-         * { System.out.println("now getting row: " + songitemId); writeSong(
-         * document, sqlContainter .getItem(songitemId) .getItemProperty(
-         * SongSQLContainer.propertyIds.songTitle .toString()).getValue()
-         * .toString(), sqlContainter .getItem(songitemId) .getItemProperty(
-         * SongSQLContainer.propertyIds.songLyrics .toString()).getValue()
+         * // Do some "heavy work" for (RowId songitemId : selectedSongsRowIds) { System.out.println("now getting row: "
+         * + songitemId); writeSong( document, sqlContainter .getItem(songitemId) .getItemProperty(
+         * SongSQLContainer.propertyIds.songTitle .toString()).getValue() .toString(), sqlContainter
+         * .getItem(songitemId) .getItemProperty( SongSQLContainer.propertyIds.songLyrics .toString()).getValue()
          * .toString()); } // tmpRunHeader.addBreak(BreakType.PAGE);
          * 
-         * // write everything to file // FileOutputStream fos = new
-         * FileOutputStream(new // File("test\\"+filename + ".docx"));
+         * // write everything to file // FileOutputStream fos = new FileOutputStream(new // File("test\\"+filename +
+         * ".docx"));
          * 
-         * FileOutputStream fos = null; try { fos = new FileOutputStream(new
-         * File(outputFile)); document.write(fos); fos.close(); } catch
-         * (IOException e1) { // TODO Auto-generated catch block
-         * e1.printStackTrace(); }
+         * FileOutputStream fos = null; try { fos = new FileOutputStream(new File(outputFile)); document.write(fos);
+         * fos.close(); } catch (IOException e1) { // TODO Auto-generated catch block e1.printStackTrace(); }
          * 
          * generatedFile = new FileResource(new File(outputFile));
          * 
-         * try { sleep(50); // Sleep for 50 milliseconds } catch
-         * (InterruptedException e) { }
+         * try { sleep(50); // Sleep for 50 milliseconds } catch (InterruptedException e) { }
          * 
-         * // Update the UI thread-safely UI.getCurrent().access(new Runnable()
-         * {
+         * // Update the UI thread-safely UI.getCurrent().access(new Runnable() {
          * 
-         * @Override public void run() { ((ProgressBar) progressComponents[1])
-         * .setValue(new Float(current)); if (current < 1.0) ((Label)
-         * progressComponents[0]).setValue("" + ((int) (current * 100)) +
-         * "% done"); else ((Label) progressComponents[0])
-         * .setValue("all done"); } }); }
+         * @Override public void run() { ((ProgressBar) progressComponents[1]) .setValue(new Float(current)); if
+         * (current < 1.0) ((Label) progressComponents[0]).setValue("" + ((int) (current * 100)) + "% done"); else
+         * ((Label) progressComponents[0]) .setValue("all done"); } }); }
          * 
-         * // Show the "all done" for a while try { sleep(2000); // Sleep for 2
-         * seconds } catch (InterruptedException e) { }
+         * // Show the "all done" for a while try { sleep(2000); // Sleep for 2 seconds } catch (InterruptedException e)
+         * { }
          * 
-         * // Update the UI thread-safely UI.getCurrent().access(new Runnable()
-         * {
+         * // Update the UI thread-safely UI.getCurrent().access(new Runnable() {
          * 
-         * @Override public void run() { // Restore the state to initial
-         * ((ProgressBar) progressComponents[1]) .setValue(new Float(0.0));
-         * ((ProgressBar) progressComponents[1]).setEnabled(false);
+         * @Override public void run() { // Restore the state to initial ((ProgressBar) progressComponents[1])
+         * .setValue(new Float(0.0)); ((ProgressBar) progressComponents[1]).setEnabled(false);
          * 
          * // Stop polling UI.getCurrent().setPollInterval(-1);
          * 
-         * // button.setEnabled(true); ((Label)
-         * progressComponents[0]).setValue("not running"); } }); } }
+         * // button.setEnabled(true); ((Label) progressComponents[0]).setValue("not running"); } }); } }
          * 
          * new WorkThread().run();
          */
@@ -185,8 +161,7 @@ public class DocumentWriter {
 
     public static void main(String[] args) throws Exception {
         DocumentWriter doc = new DocumentWriter();
-        ArrayList<String> song = ParserHelpers.readFile("test_data\\"
-                + "inputTestSong");
+        ArrayList<String> song = ParserHelpers.readFile("test_data\\" + "inputTestSong");
         // TODO: this should be unit testable somehow?!
         // doc.newSongbookWordDoc("testOutputSong", "Test song", song);
     }

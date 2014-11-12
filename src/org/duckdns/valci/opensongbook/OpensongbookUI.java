@@ -2,8 +2,6 @@ package org.duckdns.valci.opensongbook;
 
 import javax.servlet.annotation.WebServlet;
 
-import org.duckdns.valci.opensongbook.data.SongSQLContainer;
-
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
@@ -19,9 +17,6 @@ public class OpensongbookUI extends UI {
 
     public Navigator navigator;
     VerticalLayout layout;
-
-    SongSQLContainer songSQLContainerInstance;
-
     public static final String SONGBOOKMANAGER = "songbookmanager";
     public static final String SONGEDITOR = "songeditor";
 
@@ -32,24 +27,15 @@ public class OpensongbookUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-        // MainWindow mainWindow = new MainWindow();
-        // setContent(mainWindow.drawComponents());
-        // MainDashboard mainWindow = new MainDashboard();
-        // setContent(mainWindow.buildMainView());
-        songSQLContainerInstance = new SongSQLContainer();
-
         layout = new VerticalLayout();
         layout.setMargin(true);
         layout.setSpacing(true);
         setContent(layout);
-        ComponentContainerViewDisplay viewDisplay = new ComponentContainerViewDisplay(
-                layout);
+        ComponentContainerViewDisplay viewDisplay = new ComponentContainerViewDisplay(layout);
         navigator = new Navigator(UI.getCurrent(), viewDisplay);
         navigator.addView("", new LoginView());
-        navigator.addView(SONGEDITOR, new SongEditorView(
-                songSQLContainerInstance));
-        navigator.addView(SONGBOOKMANAGER, new SongBookManagerView(
-                songSQLContainerInstance));
+        navigator.addView(SONGEDITOR, new SongEditorView());
+        navigator.addView(SONGBOOKMANAGER, new SongBookManagerView());
     }
 
 }

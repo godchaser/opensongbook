@@ -6,7 +6,6 @@ import org.duckdns.valci.opensongbook.data.SongSQLContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
@@ -25,8 +24,7 @@ public class SongEditorController implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    static final Logger LOG = LoggerFactory
-            .getLogger(SongEditorController.class);
+    static final Logger LOG = LoggerFactory.getLogger(SongEditorController.class);
 
     private SongEditorModel model;
     private SongEditorView view;
@@ -34,9 +32,8 @@ public class SongEditorController implements Serializable {
     private SearchFieldTextChangeListener searchFieldTextChangeListener;
     private ClickListener buttonListener;
 
-    public SongEditorController(SongEditorView songEditorView,
-            SongSQLContainer songSQLContainerInstance) {
-        this.model = new SongEditorModel(songSQLContainerInstance);
+    public SongEditorController(SongEditorView songEditorView) {
+        this.model = new SongEditorModel();
         this.view = songEditorView;
         this.setSearchFieldTextChangeListener(new SearchFieldTextChangeListener());
         this.setButtonListener(new ButtonClickListener());
@@ -51,8 +48,7 @@ public class SongEditorController implements Serializable {
             switch (event.getButton().getId()) {
             case ("transposeButton"):
                 LOG.trace("Transpose song button clicked");
-                String transposedSong = model.chordTranspose((int) view
-                        .getSelectChordTransposition().getValue(),
+                String transposedSong = model.chordTranspose((int) view.getSelectChordTransposition().getValue(),
                         (String) view.getSongTextInput().getValue());
                 LOG.trace("Updating the view");
                 view.getSongTextInput().setValue(transposedSong);
@@ -60,13 +56,13 @@ public class SongEditorController implements Serializable {
             case ("newSongButton"):
                 LOG.trace("New song button clicked");
                 LOG.trace("Clearing input fields");
-                view.clearSearchAndSongFields();
+                model.addSong();
+                clearSearchAndSongFields();
                 break;
             case ("saveSongButton"):
                 LOG.trace("Save button clicked");
-                model.addSong(view.getSongNameField().getValue(), view
-                        .getSongTextInput().getValue(), view
-                        .getSongAuthorField().getValue());
+                // TODO: implement save song
+                // model.saveSong();
                 break;
             case ("deleteSongButton"):
                 LOG.trace("Delete button clicked");
@@ -74,25 +70,18 @@ public class SongEditorController implements Serializable {
                 break;
             case ("exportSongButton"):
                 LOG.trace("Export button clicked");
-
                 Object selectedSong = view.getSelectedSong();
-                FileResource generatedFile = model.generateSongbook(
-                        selectedSong, view.getProgressComponents());
-
-                view.getDownloadExportedSongDocxLink().setResource(
-                        generatedFile);
-                view.getFootbarLayout().addComponent(
-                        view.getDownloadExportedSongDocxLink());
+                FileResource generatedFile = model.generateSongbook(selectedSong, view.getProgressComponents());
+                view.getDownloadExportedSongDocxLink().setResource(generatedFile);
+                view.getFootbarLayout().addComponent(view.getDownloadExportedSongDocxLink());
                 break;
             }
         }
     };
 
-    public TableValueChangeListener getTableValueChangeListener(
-            Table songListTable, TextArea songTextInput,
+    public TableValueChangeListener getTableValueChangeListener(Table songListTable, TextArea songTextInput,
             TextField songNameField, TextField songAuthorField) {
-        return new TableValueChangeListener(songListTable, songTextInput,
-                songNameField, songAuthorField);
+        return new TableValueChangeListener();
     }
 
     private final class TableValueChangeListener implements ValueChangeListener {
@@ -100,52 +89,26 @@ public class SongEditorController implements Serializable {
          * 
          */
         private static final long serialVersionUID = 1L;
-        private Table songListTable;
-        private TextArea songTextInput;
-        private TextField songNameField;
-        private TextField songAuthorField;
 
-        TableValueChangeListener(Table songListTable, TextArea songTextInput,
-                TextField songNameField, TextField songAuthorField) {
-            this.songListTable = songListTable;
-            this.songTextInput = songTextInput;
-            this.songNameField = songNameField;
-            this.songAuthorField = songAuthorField;
+        public TableValueChangeListener() {
+            // TODO Auto-generated constructor stub
         }
 
         public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-            if (this.songListTable.getValue() != null) {
-                LOG.trace("Selected item (itemId) from table: "
-                        + this.songListTable.getValue());
-
-                Item it = model.getSongSQLContainer().getItem(
-                        this.songListTable.getValue());
-
-                String lyrics = (String) it.getItemProperty(
-                        SongSQLContainer.propertyIds.songLyrics.toString())
-                        .getValue();
-                String songTitle = (String) it.getItemProperty(
-                        SongSQLContainer.propertyIds.songTitle.toString())
-                        .getValue();
-                String songAuthor = (String) it.getItemProperty(
-                        SongSQLContainer.propertyIds.songAuthor.toString())
-                        .getValue();
-
-                LOG.trace("Selected lyrics: " + lyrics);
-                LOG.trace("Selected title: " + songTitle);
-                LOG.trace("Selected author: " + songAuthor);
-
-                songTextInput.setValue(lyrics);
-                songNameField.setValue(songTitle);
-                songAuthorField.setValue(songAuthor);
+            Object songID = view.getSelectedSong();
+            if (songID != null) {
+                LOG.trace("Selected songID: " + songID.toString());
+                // UPDATE EDITOR FIELDS
+                view.getEditorFields().setItemDataSource(view.getSongListTable().getItem(songID));
             } else {
-                LOG.trace("Nothing selected in search table");
+                LOG.trace("songID is null");
             }
+            // view.getEditorLayout().setVisible(songID != null);
         }
+
     }
 
-    private final class SearchFieldTextChangeListener implements
-            TextChangeListener {
+    private final class SearchFieldTextChangeListener implements TextChangeListener {
         /**
          * 
          */
@@ -155,17 +118,23 @@ public class SongEditorController implements Serializable {
         public void textChange(TextChangeEvent event) {
             LOG.trace("Removing all container filters");
             model.getSongSQLContainer().removeAllContainerFilters();
-            LOG.trace("Using search filter for song lyrics string: "
-                    + event.getText());
-            model.getSongSQLContainer().addContainerFilter(
-                    SongSQLContainer.propertyIds.songLyrics.toString(),
+            LOG.trace("Using search filter for song lyrics string: " + event.getText());
+            model.getSongSQLContainer().addContainerFilter(SongSQLContainer.propertyIds.songLyrics.toString(),
                     event.getText(), true, false);
 
         }
     }
 
-    public void setSearchFieldTextChangeListener(
-            SearchFieldTextChangeListener searchFieldTextChangeListener) {
+    private void clearSearchAndSongFields() {
+        LOG.trace("Clearing all fields");
+        view.getSearchSongsField().setValue("");
+        view.getSongListTable().select(null);
+        view.getSongNameField().setValue("");
+        view.getSongAuthorField().setValue("");
+        view.getSongTextInput().setValue("");
+    }
+
+    public void setSearchFieldTextChangeListener(SearchFieldTextChangeListener searchFieldTextChangeListener) {
         this.searchFieldTextChangeListener = searchFieldTextChangeListener;
     }
 

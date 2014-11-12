@@ -15,6 +15,8 @@ public class SongSQLContainer implements Serializable {
     private DatabaseHelper dbHelper = null;
     private SQLContainer songContainer = null;
 
+    public static final String TABLE = "opensongbook";
+
     public static enum propertyIds {
         ID, songTitle, songLyrics, songAuthor, modifiedBy, modifiedDate;
     }
@@ -30,13 +32,11 @@ public class SongSQLContainer implements Serializable {
     private void initContainers() {
         try {
             /* TableQuery and SQLContainer for song -table */
-            dbHelper = new DatabaseHelper();
-
-            TableQuery q1 = new TableQuery("songs",
-                    dbHelper.getConnectionPool());
+            dbHelper = DatabaseHelper.getInstance();
+            TableQuery q1 = new TableQuery(TABLE, dbHelper.getConnectionPool());
             q1.setVersionColumn("version");
             songContainer = new SQLContainer(q1);
-            // TODO: maybe should also add song_revisions
+            // TODO: maybe I should also add song_revisions
             songContainer.setAutoCommit(false);
         } catch (SQLException e) {
             e.printStackTrace();

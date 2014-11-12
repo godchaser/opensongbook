@@ -44,10 +44,11 @@
 		<!-- <dependency org="org.eclipse.jetty.aggregate" name="jetty-all-server" rev="8.1.15.v20140411"/> -->
 		<!-- <dependency org="org.eclipse.jetty.aggregate" name="jetty-all" rev="9.2.2.v20140723"/> -->
 		<!-- <dependency org="org.apache.tomcat" name="tomcat-catalina" rev="8.0.9" /> -->
-		<dependency org="org.xerial" name="sqlite-jdbc" rev="3.7.2"/>
+		<!-- <dependency org="org.xerial" name="sqlite-jdbc" rev="3.7.2"/>-->
 		<dependency org="org.testng" name="testng" rev="6.8.8"/>
 		<dependency org="org.seleniumhq.selenium" name="selenium-java" rev="2.42.2"/>
 		<!-- <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.0.2"/> -->
 		<dependency org="ch.qos.logback" name="logback-classic" rev="1.1.2"/>
+		<dependency org="org.hsqldb" name="hsqldb" rev="2.3.2"/>
 	</dependencies>
 </ivy-module>

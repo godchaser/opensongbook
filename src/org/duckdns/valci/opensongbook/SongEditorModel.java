@@ -26,15 +26,14 @@ public class SongEditorModel implements Serializable {
     public static String newline = System.getProperty("line.separator");
     private SQLContainer songSQLContainer;
 
-    public SongEditorModel(SongSQLContainer songSQLContainerInstance) {
-        this.songSQLContainer = songSQLContainerInstance.getContainer();
+    public SongEditorModel() {
+        this.songSQLContainer = new SongSQLContainer().getContainer();
         sortSQLContainterAlphabetical();
     }
 
     private void sortSQLContainterAlphabetical() {
-        this.songSQLContainer.sort(
-                new Object[] { SongSQLContainer.propertyIds.songTitle
-                        .toString() }, new boolean[] { true });
+        this.songSQLContainer.sort(new Object[] { SongSQLContainer.propertyIds.songTitle.toString() },
+                new boolean[] { true });
     }
 
     String chordTranspose(int transposeAmmount, String songText) {
@@ -49,9 +48,8 @@ public class SongEditorModel implements Serializable {
                 // go through each chord
                 while (m.find()) {
                     String rootChord = songLine.substring(m.start(), m.end());
-                    String transposed = (".".equals(rootChord)) ? "."
-                            : ChordTransposer.improvedTransposeChord(rootChord,
-                                    transposeAmmount);
+                    String transposed = (".".equals(rootChord)) ? "." : ChordTransposer.improvedTransposeChord(
+                            rootChord, transposeAmmount);
                     ;
                     // String transposed =
                     // ChordTransposer.improvedTransposeChord(rootChord,
@@ -66,53 +64,33 @@ public class SongEditorModel implements Serializable {
         return updatedSong.toString();
     }
 
-    public FileResource generateSongbook(Object selectedSong,
-            Object[] progressComponents) {
-        // TODO Auto-generated method stub
+    public FileResource generateSongbook(Object selectedSong, Object[] progressComponents) {
         FileResource generatedFile = null;
         DocumentWriter doc = new DocumentWriter();
         try {
-            generatedFile = doc.newSongbookWordDoc("testOutputSong",
-                    songSQLContainer, selectedSong, progressComponents);
+            generatedFile = doc
+                    .newSongbookWordDoc("testOutputSong", songSQLContainer, selectedSong, progressComponents);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return generatedFile;
     }
 
     @SuppressWarnings("unchecked")
-    public void addSong(String songTitle, String songLyrics, String songAuthor) {
+    public void addSong() {
         Object newSongId = songSQLContainer.addItem();
+        LOG.trace("adding item: " + newSongId.toString());
 
-        LOG.trace("adding item: " + songTitle);
-        // songSQLContainer.getItem(newSongId).addItemProperty(id, property));
-
-        /*
-         * The item type of SQLContainer (RowItem) doesn't support adding
-         * properties to an Item. Instead the Item already contains the
-         * properties and you set the values for it. Either
-         * SQLContainer.getItemProperty(itemId, propertyId).setValue(Object) or
-         * SQLContainer
-         * .getItem(itemId).getItemProperty(propertyId).setValue(Object).
-         */
-
-        // SQLContainer.getItem(itemId).getItemProperty(propertyId).setValue(Object)
-        songSQLContainer.getContainerProperty(newSongId,
-                SongSQLContainer.propertyIds.songTitle.toString()).setValue(
-                songTitle);
-        songSQLContainer.getContainerProperty(newSongId,
-                SongSQLContainer.propertyIds.songLyrics.toString()).setValue(
-                songLyrics);
-        songSQLContainer.getContainerProperty(newSongId,
-                SongSQLContainer.propertyIds.songAuthor.toString()).setValue(
-                songAuthor);
-        songSQLContainer.getContainerProperty(newSongId,
-                SongSQLContainer.propertyIds.modifiedDate.toString()).setValue(
-                "danas");
-        songSQLContainer.getContainerProperty(newSongId,
-                SongSQLContainer.propertyIds.modifiedBy.toString()).setValue(
-                "neki autor");
+        songSQLContainer.getContainerProperty(newSongId, SongSQLContainer.propertyIds.songTitle.toString())
+                .setValue("");
+        songSQLContainer.getContainerProperty(newSongId, SongSQLContainer.propertyIds.songLyrics.toString()).setValue(
+                "");
+        songSQLContainer.getContainerProperty(newSongId, SongSQLContainer.propertyIds.songAuthor.toString()).setValue(
+                "");
+        songSQLContainer.getContainerProperty(newSongId, SongSQLContainer.propertyIds.modifiedDate.toString())
+                .setValue("");
+        songSQLContainer.getContainerProperty(newSongId, SongSQLContainer.propertyIds.modifiedBy.toString()).setValue(
+                "");
         try {
             LOG.trace("trying to commit song entry to sql db");
             songSQLContainer.commit();
@@ -148,5 +126,4 @@ public class SongEditorModel implements Serializable {
     public SQLContainer getSongSQLContainer() {
         return songSQLContainer;
     }
-
 }

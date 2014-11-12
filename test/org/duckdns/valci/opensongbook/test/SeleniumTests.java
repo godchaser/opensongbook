@@ -25,7 +25,7 @@ public class SeleniumTests {
         // FirefoxProfile firefoxProfile = new FirefoxProfile();
         // WebDriver driver = new FirefoxDriver(ffBinary,firefoxProfile);
         driver = new FirefoxDriver();
-        //WebDriver driver = new HtmlUnitDriver(true);
+        // WebDriver driver = new HtmlUnitDriver(true);
         baseUrl = "http://localhost:8080/opensongbook/";
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     }
@@ -50,7 +50,7 @@ public class SeleniumTests {
         driver.findElement(By.id("loginButton")).click();
         driver.findElement(By.id("songEditorButton")).click();
         driver.findElement(By.xpath("//div[@id='songListTable']/div[2]/div/table/tbody/tr[4]/td/div")).click();
-        String song =  driver.findElement(By.id("songTextInput")).getAttribute("value");
+        String song = driver.findElement(By.id("songTextInput")).getAttribute("value");
         System.out.println("####################");
         System.out.println(song.toString());
         System.out.println("####################");
@@ -64,7 +64,6 @@ public class SeleniumTests {
             // fail(verificationErrorString);
         }
     }
-
 
     private boolean isElementPresent(By by) {
         try {

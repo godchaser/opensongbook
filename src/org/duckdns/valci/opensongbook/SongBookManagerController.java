@@ -2,7 +2,6 @@ package org.duckdns.valci.opensongbook;
 
 import java.io.Serializable;
 
-import org.duckdns.valci.opensongbook.data.SongSQLContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,23 +12,20 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 public class SongBookManagerController implements Serializable {
-    
+
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    static final Logger LOG = LoggerFactory
-            .getLogger(SongBookManagerController.class);
-    
-    SongBookManagerModel model;
-    SongBookManagerView songBookManagerView;
+    static final Logger LOG = LoggerFactory.getLogger(SongBookManagerController.class);
 
-    public SongBookManagerController(
-            SongBookManagerView songBookManagerViewReference,
-            SongSQLContainer songSQLContainerInstance) {
-        this.model = new SongBookManagerModel(songSQLContainerInstance);
-        this.songBookManagerView = songBookManagerViewReference;
+    SongBookManagerModel model;
+    SongBookManagerView view;
+
+    public SongBookManagerController(SongBookManagerView songBookManagerView) {
+        this.model = new SongBookManagerModel();
+        this.view = songBookManagerView;
     }
 
     public SQLContainer getSQLContainer() {
@@ -46,30 +42,22 @@ public class SongBookManagerController implements Serializable {
             case ("transposeButton"):
                 // transpose song
                 /*
-                 * String transposedSong = model.chordTranspose( (int)
-                 * songEditorView.getSelectChordTransposition() .getValue(),
-                 * (String) songEditorView .getSongTextInput().getValue()); //
-                 * update the views
+                 * String transposedSong = model.chordTranspose( (int) songEditorView.getSelectChordTransposition()
+                 * .getValue(), (String) songEditorView .getSongTextInput().getValue()); // update the views
                  * songEditorView.getSongTextInput().setValue(transposedSong);
                  */
                 break;
             case ("exportSongbookButton"):
                 LOG.trace("Export songbook button clicked");
-                Object selectedSongs = songBookManagerView.getSelectedSongs();
-                FileResource generatedFile = model
-                        .generateSongbook(selectedSongs, songBookManagerView.getProgressComponents());
+                Object selectedSongs = view.getSelectedSongs();
+                FileResource generatedFile = model.generateSongbook(selectedSongs, view.getProgressComponents());
 
-                songBookManagerView.getDownloadExportedSongDocxLink()
-                        .setResource(generatedFile);
-                songBookManagerView.getFootbarLayout().addComponent(
-                        songBookManagerView.getDownloadExportedSongDocxLink());
+                view.getDownloadExportedSongDocxLink().setResource(generatedFile);
+                view.getFootbarLayout().addComponent(view.getDownloadExportedSongDocxLink());
                 /*
-                 * FileResource generatedFile = model.exportSong(songName,
-                 * songAuthor, songText);
-                 * songEditorView.getDownloadExportedSongDocxLink().setResource(
-                 * generatedFile);
-                 * songEditorView.getFootbarLayout().addComponent(
-                 * songEditorView.getDownloadExportedSongDocxLink());
+                 * FileResource generatedFile = model.exportSong(songName, songAuthor, songText);
+                 * songEditorView.getDownloadExportedSongDocxLink().setResource( generatedFile);
+                 * songEditorView.getFootbarLayout().addComponent( songEditorView.getDownloadExportedSongDocxLink());
                  */
                 break;
             case ("saveSongButton"):
@@ -78,16 +66,12 @@ public class SongBookManagerController implements Serializable {
                 break;
             case ("exportSongButton"):
                 /*
-                 * String songText = (String) songEditorView.getSongTextInput()
-                 * .getValue(); String songName = (String)
-                 * songEditorView.getSongNameField() .getValue(); String
-                 * songAuthor = (String) songEditorView
-                 * .getSongAuthorField().getValue(); FileResource generatedFile
-                 * = model.exportSong(songName, songAuthor, songText);
-                 * songEditorView.getDownloadExportedSongDocxLink().setResource(
-                 * generatedFile);
-                 * songEditorView.getFootbarLayout().addComponent(
-                 * songEditorView.getDownloadExportedSongDocxLink()); break;
+                 * String songText = (String) songEditorView.getSongTextInput() .getValue(); String songName = (String)
+                 * songEditorView.getSongNameField() .getValue(); String songAuthor = (String) songEditorView
+                 * .getSongAuthorField().getValue(); FileResource generatedFile = model.exportSong(songName, songAuthor,
+                 * songText); songEditorView.getDownloadExportedSongDocxLink().setResource( generatedFile);
+                 * songEditorView.getFootbarLayout().addComponent( songEditorView.getDownloadExportedSongDocxLink());
+                 * break;
                  */
             }
         }

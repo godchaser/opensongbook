@@ -1,12 +1,12 @@
 package org.duckdns.valci.opensongbook;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class NavigationMenu extends CustomComponent {
     /**

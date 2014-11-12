@@ -15,8 +15,8 @@ public class SongBookManagerModel implements Serializable {
     private static final long serialVersionUID = 1L;
     private SQLContainer songSQLContainer;
 
-    public SongBookManagerModel(SongSQLContainer songSQLContainerInstance) {
-        this.songSQLContainer = songSQLContainerInstance.getContainer();
+    public SongBookManagerModel() {
+        this.songSQLContainer = new SongSQLContainer().getContainer();
     }
 
     public SQLContainer getSongSQLContainer() {
@@ -28,8 +28,8 @@ public class SongBookManagerModel implements Serializable {
         FileResource generatedFile = null;
         DocumentWriter doc = new DocumentWriter();
         try {
-            generatedFile = doc.newSongbookWordDoc("testOutputSong",
-                    songSQLContainer, selectedSongs, progressComponents);
+            generatedFile = doc.newSongbookWordDoc("testOutputSong", songSQLContainer, selectedSongs,
+                    progressComponents);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -2,9 +2,9 @@ package org.duckdns.valci.opensongbook;
 
 import org.duckdns.valci.opensongbook.data.SongSQLContainer;
 
+import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.Sizeable;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -24,6 +24,8 @@ public class SongEditorView extends VerticalLayout implements View {
     SongEditorController controller;
 
     ListSelect selectChordTransposition;
+
+    FieldGroup editorFields;
     TextArea songTextInput;
 
     TextField songNameField;
@@ -49,9 +51,8 @@ public class SongEditorView extends VerticalLayout implements View {
 
     int songEditorRows = 30;
 
-    public SongEditorView(SongSQLContainer songSQLContainerInstance) {
-        this.controller = new SongEditorController(this,
-                songSQLContainerInstance);
+    public SongEditorView() {
+        this.controller = new SongEditorController(this);
         createSongEditorComponents();
     }
 
@@ -65,6 +66,10 @@ public class SongEditorView extends VerticalLayout implements View {
 
         horizontalSongFieldLayout = new HorizontalLayout();
 
+        // ***********EDITOR FIELDS*************************
+        editorFields = new FieldGroup();
+        editorFields.setBuffered(true);
+
         // ***********SONG FIELDS COMPONENTS*****************
 
         songNameField = new TextField();
@@ -72,12 +77,14 @@ public class SongEditorView extends VerticalLayout implements View {
         // songTextInput.setSizeFull();
         songNameField.setId("songNameField");
         // songNameField.setWidth("15%");
+        editorFields.bind(songNameField, SongSQLContainer.propertyIds.songTitle.toString());
 
         songAuthorField = new TextField();
         songAuthorField.setCaption("Author");
         // songTextInput.setSizeFull();
         songAuthorField.setId("songAuthorField");
         // songAuthorField.setWidth("15%");
+        editorFields.bind(songAuthorField, SongSQLContainer.propertyIds.songAuthor.toString());
 
         horizontalSongFieldLayout.addComponent(songNameField);
         horizontalSongFieldLayout.addComponent(songAuthorField);
@@ -140,8 +147,7 @@ public class SongEditorView extends VerticalLayout implements View {
         searchSongsField.setId("searchSongsField");
         searchSongsField.setTextChangeEventMode(TextChangeEventMode.LAZY);
         searchSongsField.setTextChangeTimeout(200);
-        searchSongsField.addTextChangeListener(controller
-                .getSearchFieldTextChangeListener());
+        searchSongsField.addTextChangeListener(controller.getSearchFieldTextChangeListener());
         searchSongsField.setSizeFull();
 
         songListTable = new Table(null, controller.getSQLContainer());
@@ -151,12 +157,10 @@ public class SongEditorView extends VerticalLayout implements View {
         songListTable.setEditable(false);
         songListTable.setSizeFull();
         // songListTable.setNullSelectionAllowed(false);
-        songListTable.setVisibleColumns(new Object[] { songListTable
-                .getVisibleColumns()[1] });
+        songListTable.setVisibleColumns(new Object[] { songListTable.getVisibleColumns()[1] });
 
-        songListTable.addValueChangeListener(this.controller
-                .getTableValueChangeListener(songListTable, songTextInput,
-                        songNameField, songAuthorField));
+        songListTable.addValueChangeListener(this.controller.getTableValueChangeListener(songListTable, songTextInput,
+                songNameField, songAuthorField));
 
         songSearchLayout = new VerticalLayout();
         songSearchLayout.addComponent(searchSongsField);
@@ -169,6 +173,7 @@ public class SongEditorView extends VerticalLayout implements View {
         songTextInput.setStyleName("monoSpaceTextArea");
         songTextInput.setSizeFull();
         songTextInput.setRows(songEditorRows);
+        editorFields.bind(songTextInput, SongSQLContainer.propertyIds.songLyrics.toString());
 
         // ***********SONG EDITOR LAYOUT *****************
 
@@ -177,8 +182,7 @@ public class SongEditorView extends VerticalLayout implements View {
         horizontalSongTextLayout.setExpandRatio(songSearchLayout, 1);
         horizontalSongTextLayout.setExpandRatio(songTextInput, 2);
         songTextInput.setSizeFull();
-        horizontalSongTextLayout.setExpandRatio(verticalSongTextSidebarLayout,
-                1);
+        horizontalSongTextLayout.setExpandRatio(verticalSongTextSidebarLayout, 1);
         addComponent(horizontalSongTextLayout);
 
         // ***********SONG FOOTBAR COMPONENTS*****************
@@ -228,18 +232,9 @@ public class SongEditorView extends VerticalLayout implements View {
         return songListTable;
     }
 
-    public void clearSearchAndSongFields() {
-        getSearchSongsField().setValue("");
-        getSongListTable().select(null);
-        getSongNameField().setValue("");
-        getSongAuthorField().setValue("");
-        getSongTextInput().setValue("");
-    }
-
     @Override
     public void enter(ViewChangeEvent event) {
         // TODO Auto-generated method stub
-
     }
 
     public Object getSelectedSong() {
@@ -251,6 +246,11 @@ public class SongEditorView extends VerticalLayout implements View {
     public Object[] getProgressComponents() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public FieldGroup getEditorFields() {
+        // TODO Auto-generated method stub
+        return editorFields;
     }
 
 }

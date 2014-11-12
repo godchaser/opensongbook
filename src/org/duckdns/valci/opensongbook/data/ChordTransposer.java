@@ -3,10 +3,10 @@ package org.duckdns.valci.opensongbook.data;
 import java.util.StringTokenizer;
 
 public class ChordTransposer {
-    private static String[] notes = new String[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H"};
+    private static String[] notes = new String[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H" };
 
     public static String normalizeChord(String chord) {
-        if (chord.startsWith("B")) { 
+        if (chord.startsWith("B")) {
             chord.replaceFirst("B", "H");
         } else if (chord.startsWith("b")) {
             chord.replaceFirst("b", "b");
@@ -20,8 +20,8 @@ public class ChordTransposer {
 
         if (chord.substring(0, 1).matches("[cdefgah]")) {
             if (chord.length() > 1 && (chord.substring(1, 2).equals("h") || chord.substring(1, 2).equals("#"))) {
-                chord = chord.substring(0, 1).toUpperCase() + chord.substring(1, 2) + "mi" +
-                        (chord.length() > 2 ? chord.substring(2) : "");
+                chord = chord.substring(0, 1).toUpperCase() + chord.substring(1, 2) + "mi"
+                        + (chord.length() > 2 ? chord.substring(2) : "");
             } else {
                 chord = chord.substring(0, 1).toUpperCase() + "mi" + (chord.length() > 1 ? chord.substring(1) : "");
             }
@@ -41,8 +41,7 @@ public class ChordTransposer {
             chord.replaceFirst("Cb", "H");
         } else if (chord.startsWith("E#")) {
             chord.replaceFirst("E#", "F");
-        }
-        else if (chord.startsWith("H#")) {
+        } else if (chord.startsWith("H#")) {
             chord.replaceFirst("H#", "C");
         }
 
@@ -89,18 +88,18 @@ public class ChordTransposer {
 
         return normChord.replaceFirst(root, transpRoot);
     }
-    
+
     public static String improvedTransposeChord(String chord, int count) {
-    	if (chord.contains("/")){
-    		int firstChordEnd = chord.indexOf("/");
-    		String firstChord = transposeChord(chord.substring(0, firstChordEnd), count);
-    		String secondChord = transposeChord(chord.substring(firstChordEnd+1), count);
-    		System.out.println(chord.substring(0, firstChordEnd));
-    		System.out.println(chord.substring(firstChordEnd+1));
-    		return firstChord+"/"+secondChord;
-    	} else {
-    		return transposeChord(chord, count);	
-    	}
+        if (chord.contains("/")) {
+            int firstChordEnd = chord.indexOf("/");
+            String firstChord = transposeChord(chord.substring(0, firstChordEnd), count);
+            String secondChord = transposeChord(chord.substring(firstChordEnd + 1), count);
+            System.out.println(chord.substring(0, firstChordEnd));
+            System.out.println(chord.substring(firstChordEnd + 1));
+            return firstChord + "/" + secondChord;
+        } else {
+            return transposeChord(chord, count);
+        }
     }
 
     public static String transpose(String text, int count) {
@@ -123,12 +122,12 @@ public class ChordTransposer {
 
         return out.toString();
     }
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		System.out.println(ChordTransposer.improvedTransposeChord("Bm/C", 1));
-		//TODO
-		//BUG Bm/C ???
-	}
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        System.out.println(ChordTransposer.improvedTransposeChord("Bm/C", 1));
+        // TODO
+        // BUG Bm/C ???
+    }
 
 }
