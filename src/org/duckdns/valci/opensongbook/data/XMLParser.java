@@ -20,10 +20,11 @@ public class XMLParser {
         Document dom = db.parse(xmlFile);
         NodeList nodes = dom.getChildNodes();
         Element eElement = (Element) nodes.item(0).getChildNodes();
-        // System.out.println("\nCurrent Element :" + eElement.getNodeName());
         SongClass song = new SongClass();
         song.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
         song.setAuthor(eElement.getElementsByTagName("author").item(0).getTextContent());
+        //TODO: this is temp solution to clean all .
+        //String cleanedSong = eElement.getElementsByTagName("lyrics").item(0).getTextContent().replace(".", "");
         song.setLyrics(eElement.getElementsByTagName("lyrics").item(0).getTextContent());
         return song;
     }

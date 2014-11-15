@@ -62,7 +62,7 @@ public class DatabaseHelper implements Serializable {
     private DatabaseHelper() {
         initConnectionPool();
         initDatabase();
-        fillTestData();
+        //fillTestData();
     }
 
     public static DatabaseHelper getInstance() {
@@ -92,7 +92,7 @@ public class DatabaseHelper implements Serializable {
             // connectionPool = new
             // SimpleJDBCConnectionPool("org.hsqldb.jdbc.JDBCDriver",
             // "jdbc:hsqldb:mem:sqlcontainer" + dbPath, "", "", 2, 5);
-            connectionPool = new SimpleJDBCConnectionPool("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:" + dbPath, "",
+            connectionPool = new SimpleJDBCConnectionPool("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:file:" + dbPath, "",
                     "", 2, 5);
         } catch (SQLException e) {
             e.printStackTrace();

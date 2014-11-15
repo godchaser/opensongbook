@@ -14,7 +14,7 @@ public class UnitTests {
         SqliteManager.createTables();
     }
 
-    @Test
+    //@Test
     public void testDatabaseSongInsert() throws Exception {
         SongClass testSong = new SongClass();
         testSong.setTitle("Test song title");
@@ -27,7 +27,7 @@ public class UnitTests {
                 provisionedSong.getAuthor()));
     }
 
-    @Test
+    //@Test
     public void testDatabaseTrigger() throws Exception {
 
     }
@@ -38,7 +38,7 @@ public class UnitTests {
         SongExporter.exportOpensongFolderToOpenSongbook(opensongDirectory);
     }
 
-    @Test
+    //@Test
     // should fail while do not support H, but only B - american
     public void testLineTesterBasicChord1() throws Exception {
         ArrayList<SongClass> songs = SqliteManager.selectAllSongsClasses();
