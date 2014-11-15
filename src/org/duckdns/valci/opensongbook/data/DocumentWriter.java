@@ -88,9 +88,9 @@ public class DocumentWriter {
             writeSong(
                     document,
                     sqlContainter.getItem(songitemId)
-                            .getItemProperty(SongSQLContainer.propertyIds.songTitle.toString()).getValue().toString(),
+                            .getItemProperty(SongSQLContainer.propertyIds.SONGTITLE.toString()).getValue().toString(),
                     sqlContainter.getItem(songitemId)
-                            .getItemProperty(SongSQLContainer.propertyIds.songLyrics.toString()).getValue().toString()
+                            .getItemProperty(SongSQLContainer.propertyIds.SONGLYRICS.toString()).getValue().toString()
                             .replaceAll("\n", "\r\n"));
             // this is fix to use windows line endings CRLF instead of linux LF
         }

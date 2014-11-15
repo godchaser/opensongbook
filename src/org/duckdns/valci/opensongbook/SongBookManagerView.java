@@ -45,7 +45,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
         setMargin(true);
         addComponent(new NavigationMenu());
         songBookManagerTwinColSelect = new TwinColSelect("SongBookManager", controller.getSQLContainer());
-        songBookManagerTwinColSelect.setItemCaptionPropertyId(SongSQLContainer.propertyIds.songTitle.toString());
+        songBookManagerTwinColSelect.setItemCaptionPropertyId(SongSQLContainer.propertyIds.SONGTITLE.toString());
         songBookManagerTwinColSelect.setRows(songBookManagerRows);
         addComponent(songBookManagerTwinColSelect);
         Button exportButton = new Button("Export songbook");

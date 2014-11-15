@@ -1,6 +1,8 @@
 package org.duckdns.valci.opensongbook;
 
 import java.io.Serializable;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.duckdns.valci.opensongbook.data.SongSQLContainer;
 import org.slf4j.Logger;
@@ -18,7 +20,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-public class OpenSongBookController implements Serializable {
+public class OpenSongBookController implements Observer, Serializable {
     /**
      * 
      */
@@ -35,6 +37,22 @@ public class OpenSongBookController implements Serializable {
 
     // SINGLETON PATTERN
     private static OpenSongBookController instance = null;
+
+    @Override
+    public void update(Observable o, Object itemId) {
+        LOG.trace("Model observable data updated" + itemId.toString());
+        if (model.getSongSQLContainer().containsId(itemId)) {
+            LOG.trace("selecting updated item!");
+            editorView.getSongListTable().select(itemId);
+        } else {
+            LOG.trace("ItemId not present in model, probably deleted");
+            Object lastItemId = model.getSongSQLContainer().lastItemId();
+            if (lastItemId != null) {
+                LOG.trace("Selecting last itemId: " + lastItemId);
+                editorView.getSongListTable().select(lastItemId);
+            }
+        }
+    }
 
     public static OpenSongBookController getInstance(Object view) {
         if (instance == null) {
@@ -68,7 +86,7 @@ public class OpenSongBookController implements Serializable {
     }
 
     private OpenSongBookController(Object songView) {
-        this.model = new OpenSongBookModel();
+        this.model = new OpenSongBookModel(this);
         this.setSearchFieldTextChangeListener(new SearchFieldTextChangeListener());
         this.setButtonListener(new ButtonClickListener());
     }
@@ -79,38 +97,35 @@ public class OpenSongBookController implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public void buttonClick(ClickEvent event) {
-            switch (event.getButton().getId()) {
+            String buttonID = event.getButton().getId();
+            LOG.trace(buttonID + "button clicked");
+            switch (buttonID) {
             case ("transposeButton"):
-                LOG.trace("Transpose song button clicked");
                 String transposedSong = model.chordTranspose((int) editorView.getSelectChordTransposition().getValue(),
                         (String) editorView.getSongTextInput().getValue());
                 LOG.trace("Updating the view");
                 editorView.getSongTextInput().setValue(transposedSong);
                 break;
             case ("newSongButton"):
-                LOG.trace("New song button clicked");
                 LOG.trace("Clearing input fields");
                 model.addSong();
-                clearSearchAndSongFields();
+                editorView.getSearchSongsField().setValue("");
+                editorView.getEditorFields().getField(SongSQLContainer.propertyIds.SONGLYRICS.toString()).focus();
+                // clearSearchAndSongFields();
                 break;
             case ("saveSongButton"):
-                LOG.trace("Save button clicked");
-                // TODO: implement save song
-                // model.saveSong();
+                model.saveSong(editorView.getEditorFields(), editorView.getSelectedSong());
                 break;
             case ("deleteSongButton"):
-                LOG.trace("Delete button clicked");
                 model.deleteSong(editorView.getSongListTable().getValue());
                 break;
             case ("exportSongButton"):
-                LOG.trace("Export button clicked");
                 Object selectedSong = editorView.getSelectedSong();
                 FileResource generatedSong = model.generateSongbook(selectedSong, editorView.getProgressComponents());
                 editorView.getDownloadExportedSongDocxLink().setResource(generatedSong);
                 editorView.getFootbarLayout().addComponent(editorView.getDownloadExportedSongDocxLink());
                 break;
             case ("exportSongbookButton"):
-                LOG.trace("Export songbook button clicked");
                 if (songbookManagerView.getSelectedSongs() != null) {
                     LOG.trace("Getting selected songs");
                     Object selectedSongs = songbookManagerView.getSelectedSongs();
@@ -174,21 +189,18 @@ public class OpenSongBookController implements Serializable {
             LOG.trace("Removing all container filters");
             model.getSongSQLContainer().removeAllContainerFilters();
             LOG.trace("Using search filter for song lyrics string: " + event.getText());
-            model.getSongSQLContainer().addContainerFilter(SongSQLContainer.propertyIds.songLyrics.toString(),
+            model.getSongSQLContainer().addContainerFilter(SongSQLContainer.propertyIds.SONGLYRICS.toString(),
                     event.getText(), true, false);
 
         }
     }
 
-    private void clearSearchAndSongFields() {
-        LOG.trace("Clearing all fields");
-        editorView.getSearchSongsField().setValue("");
-        editorView.getSongListTable().select(null);
-        editorView.getSongNameField().setValue("");
-        editorView.getSongAuthorField().setValue("");
-        editorView.getSongTextInput().setValue("");
-    }
-
+    /*
+     * private void clearSearchAndSongFields() { LOG.trace("Clearing all fields");
+     * editorView.getSearchSongsField().setValue(""); editorView.getSongListTable().select(null);
+     * editorView.getSongNameField().setValue(""); editorView.getSongAuthorField().setValue("");
+     * editorView.getSongTextInput().setValue(""); }
+     */
     public void setSearchFieldTextChangeListener(SearchFieldTextChangeListener searchFieldTextChangeListener) {
         this.searchFieldTextChangeListener = searchFieldTextChangeListener;
     }

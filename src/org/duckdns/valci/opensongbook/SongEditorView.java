@@ -77,14 +77,14 @@ public class SongEditorView extends VerticalLayout implements View {
         // songTextInput.setSizeFull();
         songNameField.setId("songNameField");
         // songNameField.setWidth("15%");
-        editorFields.bind(songNameField, SongSQLContainer.propertyIds.songTitle.toString());
+        editorFields.bind(songNameField, SongSQLContainer.propertyIds.SONGTITLE.toString());
 
         songAuthorField = new TextField();
         songAuthorField.setCaption("Author");
         // songTextInput.setSizeFull();
         songAuthorField.setId("songAuthorField");
         // songAuthorField.setWidth("15%");
-        editorFields.bind(songAuthorField, SongSQLContainer.propertyIds.songAuthor.toString());
+        editorFields.bind(songAuthorField, SongSQLContainer.propertyIds.SONGAUTHOR.toString());
 
         horizontalSongFieldLayout.addComponent(songNameField);
         horizontalSongFieldLayout.addComponent(songAuthorField);
@@ -173,7 +173,7 @@ public class SongEditorView extends VerticalLayout implements View {
         songTextInput.setStyleName("monoSpaceTextArea");
         songTextInput.setSizeFull();
         songTextInput.setRows(songEditorRows);
-        editorFields.bind(songTextInput, SongSQLContainer.propertyIds.songLyrics.toString());
+        editorFields.bind(songTextInput, SongSQLContainer.propertyIds.SONGLYRICS.toString());
 
         // ***********SONG EDITOR LAYOUT *****************
 
