@@ -18,23 +18,57 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-public class SongEditorController implements Serializable {
+public class OpenSongBookController implements Serializable {
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    static final Logger LOG = LoggerFactory.getLogger(SongEditorController.class);
+    static final Logger LOG = LoggerFactory.getLogger(OpenSongBookController.class);
 
-    private SongEditorModel model;
-    private SongEditorView view;
+    private OpenSongBookModel model;
+    private SongEditorView editorView;
+    private SongBookManagerView songbookManagerView;
 
     private SearchFieldTextChangeListener searchFieldTextChangeListener;
     private ClickListener buttonListener;
 
-    public SongEditorController(SongEditorView songEditorView) {
-        this.model = new SongEditorModel();
-        this.view = songEditorView;
+    // SINGLETON PATTERN
+    private static OpenSongBookController instance = null;
+
+    public static OpenSongBookController getInstance(Object view) {
+        if (instance == null) {
+            LOG.trace("Instantiating SongEditorController");
+            instance = new OpenSongBookController(view);
+        }
+        if (view instanceof SongEditorView) {
+            instance.registerEditorView(view);
+        } else if (view instanceof SongBookManagerView) {
+            instance.registerSongbookManagerView(view);
+        }
+        return instance;
+    }
+
+    private void registerSongbookManagerView(Object view) {
+        if (editorView == null) {
+            LOG.trace("Registering editorView");
+            songbookManagerView = (SongBookManagerView) view;
+        } else {
+            LOG.trace("editorView already registered");
+        }
+    }
+
+    private void registerEditorView(Object view) {
+        if (editorView == null) {
+            LOG.trace("Registering songbookManagerView");
+            editorView = (SongEditorView) view;
+        } else {
+            LOG.trace("songbookManagerView already registered");
+        }
+    }
+
+    private OpenSongBookController(Object songView) {
+        this.model = new OpenSongBookModel();
         this.setSearchFieldTextChangeListener(new SearchFieldTextChangeListener());
         this.setButtonListener(new ButtonClickListener());
     }
@@ -48,10 +82,10 @@ public class SongEditorController implements Serializable {
             switch (event.getButton().getId()) {
             case ("transposeButton"):
                 LOG.trace("Transpose song button clicked");
-                String transposedSong = model.chordTranspose((int) view.getSelectChordTransposition().getValue(),
-                        (String) view.getSongTextInput().getValue());
+                String transposedSong = model.chordTranspose((int) editorView.getSelectChordTransposition().getValue(),
+                        (String) editorView.getSongTextInput().getValue());
                 LOG.trace("Updating the view");
-                view.getSongTextInput().setValue(transposedSong);
+                editorView.getSongTextInput().setValue(transposedSong);
                 break;
             case ("newSongButton"):
                 LOG.trace("New song button clicked");
@@ -66,14 +100,35 @@ public class SongEditorController implements Serializable {
                 break;
             case ("deleteSongButton"):
                 LOG.trace("Delete button clicked");
-                model.deleteSong(view.getSongListTable().getValue());
+                model.deleteSong(editorView.getSongListTable().getValue());
                 break;
             case ("exportSongButton"):
                 LOG.trace("Export button clicked");
-                Object selectedSong = view.getSelectedSong();
-                FileResource generatedFile = model.generateSongbook(selectedSong, view.getProgressComponents());
-                view.getDownloadExportedSongDocxLink().setResource(generatedFile);
-                view.getFootbarLayout().addComponent(view.getDownloadExportedSongDocxLink());
+                Object selectedSong = editorView.getSelectedSong();
+                FileResource generatedSong = model.generateSongbook(selectedSong, editorView.getProgressComponents());
+                editorView.getDownloadExportedSongDocxLink().setResource(generatedSong);
+                editorView.getFootbarLayout().addComponent(editorView.getDownloadExportedSongDocxLink());
+                break;
+            case ("exportSongbookButton"):
+                LOG.trace("Export songbook button clicked");
+                if (songbookManagerView.getSelectedSongs() != null) {
+                    LOG.trace("Getting selected songs");
+                    Object selectedSongs = songbookManagerView.getSelectedSongs();
+                    FileResource generatedSongBook = model.generateSongbook(selectedSongs,
+                            songbookManagerView.getProgressComponents());
+
+                    songbookManagerView.getDownloadExportedSongDocxLink().setResource(generatedSongBook);
+                    songbookManagerView.getFootbarLayout().addComponent(
+                            songbookManagerView.getDownloadExportedSongDocxLink());
+                    /*
+                     * FileResource generatedFile = model.exportSong(songName, songAuthor, songText);
+                     * songEditorView.getDownloadExportedSongDocxLink().setResource( generatedFile);
+                     * songEditorView.getFootbarLayout().addComponent(
+                     * songEditorView.getDownloadExportedSongDocxLink());
+                     */
+                } else {
+                    LOG.trace("No songs selected");
+                }
                 break;
             }
         }
@@ -95,11 +150,11 @@ public class SongEditorController implements Serializable {
         }
 
         public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-            Object songID = view.getSelectedSong();
+            Object songID = editorView.getSelectedSong();
             if (songID != null) {
                 LOG.trace("Selected songID: " + songID.toString());
                 // UPDATE EDITOR FIELDS
-                view.getEditorFields().setItemDataSource(view.getSongListTable().getItem(songID));
+                editorView.getEditorFields().setItemDataSource(editorView.getSongListTable().getItem(songID));
             } else {
                 LOG.trace("songID is null");
             }
@@ -127,11 +182,11 @@ public class SongEditorController implements Serializable {
 
     private void clearSearchAndSongFields() {
         LOG.trace("Clearing all fields");
-        view.getSearchSongsField().setValue("");
-        view.getSongListTable().select(null);
-        view.getSongNameField().setValue("");
-        view.getSongAuthorField().setValue("");
-        view.getSongTextInput().setValue("");
+        editorView.getSearchSongsField().setValue("");
+        editorView.getSongListTable().select(null);
+        editorView.getSongNameField().setValue("");
+        editorView.getSongAuthorField().setValue("");
+        editorView.getSongTextInput().setValue("");
     }
 
     public void setSearchFieldTextChangeListener(SearchFieldTextChangeListener searchFieldTextChangeListener) {

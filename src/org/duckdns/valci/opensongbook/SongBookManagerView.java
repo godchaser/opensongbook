@@ -16,7 +16,7 @@ import com.vaadin.ui.VerticalLayout;
 public class SongBookManagerView extends VerticalLayout implements View {
 
     TwinColSelect songBookManagerTwinColSelect;
-    SongBookManagerController controller;
+    OpenSongBookController controller;
 
     HorizontalLayout footbarLayout;
     Link downloadExportedSongDocxLink;
@@ -35,7 +35,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
     }
 
     public SongBookManagerView() {
-        this.controller = new SongBookManagerController(this);
+        this.controller = OpenSongBookController.getInstance(this);
         createSongBookManagerComponents();
     }
 
@@ -50,7 +50,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
         addComponent(songBookManagerTwinColSelect);
         Button exportButton = new Button("Export songbook");
         exportButton.setId("exportSongbookButton");
-        exportButton.addClickListener(controller.buttonListener);
+        exportButton.addClickListener(controller.getButtonListener());
         addComponent(exportButton);
 
         footbarLayout = new HorizontalLayout();

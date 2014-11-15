@@ -21,7 +21,7 @@ public class SongEditorView extends VerticalLayout implements View {
      * 
      */
     private static final long serialVersionUID = 1L;
-    SongEditorController controller;
+    OpenSongBookController controller;
 
     ListSelect selectChordTransposition;
 
@@ -52,7 +52,7 @@ public class SongEditorView extends VerticalLayout implements View {
     int songEditorRows = 30;
 
     public SongEditorView() {
-        this.controller = new SongEditorController(this);
+        this.controller = OpenSongBookController.getInstance(this);
         createSongEditorComponents();
     }
 

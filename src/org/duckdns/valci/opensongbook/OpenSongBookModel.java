@@ -14,19 +14,19 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.server.FileResource;
 
-public class SongEditorModel implements Serializable {
+public class OpenSongBookModel implements Serializable {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    static final Logger LOG = LoggerFactory.getLogger(SongEditorModel.class);
+    static final Logger LOG = LoggerFactory.getLogger(OpenSongBookModel.class);
 
     public static String newline = System.getProperty("line.separator");
     private SQLContainer songSQLContainer;
 
-    public SongEditorModel() {
+    public OpenSongBookModel() {
         this.songSQLContainer = new SongSQLContainer().getContainer();
         sortSQLContainterAlphabetical();
     }
