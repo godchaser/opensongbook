@@ -1,7 +1,5 @@
 package org.duckdns.valci.opensongbook;
 
-import org.duckdns.valci.opensongbook.data.DatabaseHelper;
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
@@ -35,7 +33,6 @@ public class LoginView extends VerticalLayout implements View {
         Button button = new Button("Log In", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                DatabaseHelper dh = DatabaseHelper.getInstance();
                 getUI().getNavigator().navigateTo(OpensongbookUI.SONGEDITOR);
             }
         });

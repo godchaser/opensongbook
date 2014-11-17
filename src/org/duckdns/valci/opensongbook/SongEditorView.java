@@ -3,6 +3,7 @@ package org.duckdns.valci.opensongbook;
 import org.duckdns.valci.opensongbook.data.SongSQLContainer;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
@@ -42,6 +43,7 @@ public class SongEditorView extends VerticalLayout implements View {
 
     Button transposeButton;
     Button newSongButton;
+
     Button saveSongButton;
     Button deleteSongButton;
     Button exportSongButton;
@@ -52,7 +54,7 @@ public class SongEditorView extends VerticalLayout implements View {
     int songEditorRows = 30;
 
     public SongEditorView() {
-        this.controller = OpenSongBookController.getInstance(this);
+        this.controller = new OpenSongBookController(this);
         createSongEditorComponents();
     }
 
@@ -77,6 +79,8 @@ public class SongEditorView extends VerticalLayout implements View {
         // songTextInput.setSizeFull();
         songNameField.setId("songNameField");
         // songNameField.setWidth("15%");
+        songNameField.addValidator(new StringLengthValidator("The song name must be 1-32 letters (was {0})", 1, 32,
+                false));
         editorFields.bind(songNameField, SongSQLContainer.propertyIds.SONGTITLE.toString());
 
         songAuthorField = new TextField();
@@ -84,6 +88,8 @@ public class SongEditorView extends VerticalLayout implements View {
         // songTextInput.setSizeFull();
         songAuthorField.setId("songAuthorField");
         // songAuthorField.setWidth("15%");
+        //songAuthorField.addValidator(new StringLengthValidator("The song author name must be 1-32 letters (was {0})",
+        //        1, 32, true));
         editorFields.bind(songAuthorField, SongSQLContainer.propertyIds.SONGAUTHOR.toString());
 
         horizontalSongFieldLayout.addComponent(songNameField);
@@ -173,6 +179,8 @@ public class SongEditorView extends VerticalLayout implements View {
         songTextInput.setStyleName("monoSpaceTextArea");
         songTextInput.setSizeFull();
         songTextInput.setRows(songEditorRows);
+        songTextInput.addValidator(new StringLengthValidator("The song lyrics must have at least 1 letters (was {0})",
+                1, 4000, false));
         editorFields.bind(songTextInput, SongSQLContainer.propertyIds.SONGLYRICS.toString());
 
         // ***********SONG EDITOR LAYOUT *****************
@@ -232,9 +240,8 @@ public class SongEditorView extends VerticalLayout implements View {
         return songListTable;
     }
 
-    @Override
-    public void enter(ViewChangeEvent event) {
-        // TODO Auto-generated method stub
+    public Button getNewSongButton() {
+        return newSongButton;
     }
 
     public Object getSelectedSong() {
@@ -251,6 +258,11 @@ public class SongEditorView extends VerticalLayout implements View {
     public FieldGroup getEditorFields() {
         // TODO Auto-generated method stub
         return editorFields;
+    }
+
+    @Override
+    public void enter(ViewChangeEvent event) {
+        // TODO Auto-generated method stub
     }
 
 }

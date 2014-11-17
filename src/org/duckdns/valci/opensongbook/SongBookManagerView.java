@@ -35,7 +35,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
     }
 
     public SongBookManagerView() {
-        this.controller = OpenSongBookController.getInstance(this);
+		this.controller = new OpenSongBookController(this);
         createSongBookManagerComponents();
     }
 

@@ -17,11 +17,11 @@ public class SongSQLContainer implements Serializable {
      * 
      */
     private static final long serialVersionUID = 1L;
-    
+
     static final Logger LOG = LoggerFactory.getLogger(SongSQLContainer.class);
     private DatabaseHelper dbHelper = null;
     private SQLContainer songContainer = null;
-    
+
     private Object oldRowId = null;
     private Object newRowId = null;
 
@@ -42,7 +42,8 @@ public class SongSQLContainer implements Serializable {
     private void initContainers() {
         try {
             /* TableQuery and SQLContainer for song -table */
-            dbHelper = DatabaseHelper.getInstance();
+            // dbHelper = DatabaseHelper.getInstance();
+            dbHelper = new DatabaseHelper();
             TableQuery q1 = new TableQuery(TABLE, dbHelper.getConnectionPool());
             q1.setVersionColumn(propertyIds.VERSION.toString());
             songContainer = new SQLContainer(q1);
@@ -57,30 +58,37 @@ public class SongSQLContainer implements Serializable {
                 @Override
                 public void rowIdChange(RowIdChangeEvent event) {
                     LOG.trace("RowId change event fired!");
-                    setOldRowId(event.getOldRowId());
-                    LOG.trace("OldRowId: " + getOldRowId().toString());
-                    setNewRowId(event.getOldRowId());
-                    LOG.trace("NewRowId: " + getNewRowId().toString());
+                    Object oldId = event.getOldRowId();
+                    Object newId = event.getNewRowId();
+                    setOldRowId(oldId);
+                    if (oldId != null) {
+                        LOG.trace("OldRowId: " + getOldRowId().toString());
+                    }
+                    setNewRowId(newId);
+                    if (newId != null) {
+                        LOG.trace("NewRowId: " + getNewRowId().toString());
+                    }
+
                 }
             });
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
+
     public Object getOldRowId() {
         return oldRowId;
     }
 
-    public void setOldRowId(Object oldRowId) {
-        this.oldRowId = oldRowId;
+    public void setOldRowId(Object oldId) {
+        oldRowId = oldId;
     }
 
     public Object getNewRowId() {
         return newRowId;
     }
 
-    public void setNewRowId(Object newRowId) {
-        this.newRowId = newRowId;
+    public void setNewRowId(Object newId) {
+        newRowId = newId;
     }
 }

@@ -25,9 +25,6 @@ public class DatabaseHelper implements Serializable {
 
     static final Logger LOG = LoggerFactory.getLogger(DatabaseHelper.class);
 
-    // SINGLETON PATTERN
-    private static DatabaseHelper instance = null;
-
     private String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
     private FileResource dbFile = new FileResource(new File(basepath + "/WEB-INF/resources/" + SongSQLContainer.TABLE
             + ".sql"));
@@ -59,21 +56,16 @@ public class DatabaseHelper implements Serializable {
 
     //@formatter:on
 
-    private DatabaseHelper() {
+    public DatabaseHelper() {
         initConnectionPool();
         initDatabase();
-        //fillTestData();
+        // fillTestData();
     }
 
-    public static DatabaseHelper getInstance() {
-        if (instance == null) {
-            LOG.trace("Instantiating DatabaseHelper");
-            instance = new DatabaseHelper();
-        }
-        LOG.trace("Returning already instantiated DatabaseHelper");
-        return instance;
-    }
-
+    /*
+     * public static DatabaseHelper getInstance() { if (instance == null) { LOG.trace("Instantiating DatabaseHelper");
+     * instance = new DatabaseHelper(); } LOG.trace("Returning already instantiated DatabaseHelper"); return instance; }
+     */
     public void fillTestData() {
         LOG.trace("Deleting all data");
         executeSQLCommand(deleteAllDataCMD);
@@ -92,8 +84,8 @@ public class DatabaseHelper implements Serializable {
             // connectionPool = new
             // SimpleJDBCConnectionPool("org.hsqldb.jdbc.JDBCDriver",
             // "jdbc:hsqldb:mem:sqlcontainer" + dbPath, "", "", 2, 5);
-            connectionPool = new SimpleJDBCConnectionPool("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:file:" + dbPath, "",
-                    "", 2, 5);
+            connectionPool = new SimpleJDBCConnectionPool("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:file:" + dbPath,
+                    "", "", 2, 5);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (IOException e) {

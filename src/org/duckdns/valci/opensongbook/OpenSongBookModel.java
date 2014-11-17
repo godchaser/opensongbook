@@ -2,8 +2,6 @@ package org.duckdns.valci.opensongbook;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Observable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +32,7 @@ public class OpenSongBookModel extends Observable implements Serializable {
     private SongSQLContainer songSQLContainer;
 
     public OpenSongBookModel(OpenSongBookController controller) {
-        this.songSQLContainer = new SongSQLContainer();
+        songSQLContainer = new SongSQLContainer();
         addObserver(controller);
         sortSQLContainterAlphabetical();
     }
@@ -84,38 +82,26 @@ public class OpenSongBookModel extends Observable implements Serializable {
         return generatedFile;
     }
 
-    @SuppressWarnings("unchecked")
-    public void addSong() {
-        Object newSongId = songSQLContainer.getContainer().addItem();
-        LOG.trace("adding item: " + newSongId.toString());
-
-        songSQLContainer.getContainer()
-                .getContainerProperty(newSongId, SongSQLContainer.propertyIds.SONGTITLE.toString()).setValue("");
-        songSQLContainer.getContainer()
-                .getContainerProperty(newSongId, SongSQLContainer.propertyIds.SONGLYRICS.toString()).setValue("");
-        songSQLContainer.getContainer()
-                .getContainerProperty(newSongId, SongSQLContainer.propertyIds.SONGAUTHOR.toString()).setValue("");
-        songSQLContainer.getContainer()
-                .getContainerProperty(newSongId, SongSQLContainer.propertyIds.MODIFIEDDATE.toString()).setValue("");
-        songSQLContainer.getContainer()
-                .getContainerProperty(newSongId, SongSQLContainer.propertyIds.MODIFIEDBY.toString()).setValue("");
-        LOG.trace("now trying to add new song: " + newSongId.toString());
-        LOG.trace("trying to add new song to sql db");
-        if (commitToContainer()) {
-            LOG.trace("commit success, selecting updated value");
-            Object newRowId = songSQLContainer.getContainer().getItem(songSQLContainer);
-
-            if (newRowId == null) {
-                LOG.trace("RowId is null, so selecting last item in list");
-                // this is workaround because seems that RowChangeId listener is
-                // not working sometimes so we can select last item in list
-                newRowId = songSQLContainer.getContainer().lastItemId();
-            }
-            LOG.trace("Updated new row in table: " + newRowId);
-            setChanged();
-            notifyObservers(newRowId);
-        }
-    }
+    /*
+     * @SuppressWarnings("unchecked") public void addSong() { Object newSongId =
+     * songSQLContainer.getContainer().addItem(); LOG.trace("adding item: " + newSongId.toString());
+     * 
+     * songSQLContainer.getContainer() .getContainerProperty(newSongId,
+     * SongSQLContainer.propertyIds.SONGTITLE.toString()).setValue(""); songSQLContainer.getContainer()
+     * .getContainerProperty(newSongId, SongSQLContainer.propertyIds.SONGLYRICS.toString()).setValue("");
+     * songSQLContainer.getContainer() .getContainerProperty(newSongId,
+     * SongSQLContainer.propertyIds.SONGAUTHOR.toString()).setValue(""); songSQLContainer.getContainer()
+     * .getContainerProperty(newSongId, SongSQLContainer.propertyIds.MODIFIEDDATE.toString()).setValue("");
+     * songSQLContainer.getContainer() .getContainerProperty(newSongId,
+     * SongSQLContainer.propertyIds.MODIFIEDBY.toString()).setValue(""); LOG.trace("now trying to add new song: " +
+     * newSongId.toString()); LOG.trace("trying to add new song to sql db"); if (commitToContainer()) {
+     * LOG.trace("commit success, selecting updated value"); Object newRowId = songSQLContainer.getNewRowId();
+     * 
+     * if (newRowId == null) { LOG.trace("RowId is null, so selecting last item in list"); // this is workaround because
+     * seems that RowChangeId listener is // not working sometimes so we can select last item in list newRowId =
+     * songSQLContainer.getContainer().lastItemId(); } LOG.trace("Updated new row in table: " + newRowId); setChanged();
+     * notifyObservers(newRowId); } }
+     */
 
     public void deleteSong(Object itemID) {
         LOG.trace("now deleting song: " + itemID.toString());
@@ -131,23 +117,22 @@ public class OpenSongBookModel extends Observable implements Serializable {
         return songSQLContainer.getContainer();
     }
 
-    @SuppressWarnings("unchecked")
     public void saveSong(FieldGroup fieldGroup, Object itemID) {
         LOG.trace("now trying to save ticket");
 
         commitFieldGroup(fieldGroup);
-
-        String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
-        songSQLContainer.getContainer()
-                .getContainerProperty(itemID, SongSQLContainer.propertyIds.MODIFIEDDATE.toString()).setValue(timeStamp);
-
+        /*
+         * String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getTime());
+         * songSQLContainer.getContainer() .getContainerProperty(itemID,
+         * SongSQLContainer.propertyIds.MODIFIEDDATE.toString()).setValue(timeStamp);
+         */
         if (commitToContainer()) {
             setChanged();
             notifyObservers(itemID);
         }
     }
 
-    private boolean commitToContainer() {
+    public boolean commitToContainer() {
         boolean commitSuccess = false;
         try {
             LOG.trace("trying to commit change to sql db");
@@ -164,19 +149,48 @@ public class OpenSongBookModel extends Observable implements Serializable {
         } catch (OptimisticLockException e) {
             LOG.trace("Caught OptimisticLockException, should refresh page - mid air collision");
             Notification.show("Mid air collision detected",
-                    "Someone already updated ticket you are using, refreshing page", Notification.Type.WARNING_MESSAGE);
+                    "Someone already updated ticket you are using, try refreshing page or logout/login",
+                    Notification.Type.WARNING_MESSAGE);
             e.printStackTrace();
         }
         return commitSuccess;
     }
 
-    private void commitFieldGroup(FieldGroup fieldGroup) {
+    public void commitFieldGroup(FieldGroup fieldGroup) {
         try {
             LOG.trace("now trying to commit field group values");
             fieldGroup.commit();
         } catch (CommitException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
+            Notification.show("Commit failed",
+                    "Song currently could not be updated, try refreshing page or logout/login",
+                    Notification.Type.WARNING_MESSAGE);
         }
     }
+
+    public void revertSongAddition() {
+        // TODO Auto-generated method stub
+        try {
+            LOG.trace("trying to rollback change to sql db");
+            songSQLContainer.getContainer().rollback();
+        } catch (UnsupportedOperationException e) {
+            // TODO Auto-generated catch block
+            LOG.trace("rollback failed: UnsupportedOperationException" + e);
+            e.printStackTrace();
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            LOG.trace("rollback failed: SQLException" + e);
+            e.printStackTrace();
+        } catch (OptimisticLockException e) {
+            LOG.trace("Caught OptimisticLockException, should refresh page - mid air collision");
+            Notification.show("Mid air collision detected",
+                    "Someone already updated ticket you are using, refreshing page", Notification.Type.WARNING_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+    /*
+     * public void discardFieldGroupModifications(FieldGroup fieldGroup) {
+     * LOG.trace("Discarding all changes to field group"); fieldGroup.discard(); }
+     */
 }
