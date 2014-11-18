@@ -51,17 +51,12 @@ public class OpenSongBookController implements Observer, Serializable {
         } else {
             LOG.trace("ItemId not present in model, probably deleted");
             editorView.getSongListTable().select(null);
-            // Object lastItemId = model.getSongSQLContainer().lastItemId();
-            // if (lastItemId != null) {
-            // LOG.trace("Selecting last itemId: " + lastItemId);
-            // editorView.getSongListTable().select(lastItemId);
-            // }
         }
     }
 
     public OpenSongBookController(Object view) {
         LOG.trace("Instantiating OpenSongBookModel");
-        this.model = new OpenSongBookModel(this);
+        model = new OpenSongBookModel(this);
         if (view instanceof SongEditorView) {
             registerEditorView(view);
         } else if (view instanceof SongBookManagerView) {
@@ -96,7 +91,7 @@ public class OpenSongBookController implements Observer, Serializable {
 
         public void buttonClick(ClickEvent event) {
             String buttonID = event.getButton().getId();
-            LOG.trace(buttonID + "button clicked");
+            LOG.trace(buttonID + " button clicked");
             switch (buttonID) {
             case ("transposeButton"):
                 String transposedSong = model.chordTranspose((int) editorView.getSelectChordTransposition().getValue(),
@@ -105,43 +100,23 @@ public class OpenSongBookController implements Observer, Serializable {
                 editorView.getSongTextInput().setValue(transposedSong);
                 break;
             case ("newSongButton"):
-                LOG.trace("Temporary unbind fields");
-                editorView.getEditorFields().unbind(editorView.getSongNameField());
-                editorView.getEditorFields().unbind(editorView.getSongAuthorField());
-                editorView.getEditorFields().unbind(editorView.getSongTextInput());
-                LOG.trace("Clearing input fields");
-                clearSearchAndSongFields();
-                // model.saveSong(editorView.getEditorFields(), null);
-                // editorView.getSearchSongsField().setValue("");
+                model.addSong();
+                clearEditorFields();
                 LOG.trace("isCurrentlyModified: " + isCurrentlyModified);
                 isCurrentlyModified = true;
                 LOG.trace("isCurrentlyModified: " + isCurrentlyModified);
-                // editorView.getEditorFields().getField(SongSQLContainer.propertyIds.SONGTITLE.toString()).focus();
-                // clearSearchAndSongFields();
+                editorView.getEditorFields().getField(SongSQLContainer.propertyIds.SONGTITLE.toString()).focus();
                 break;
             case ("cancelSongAddition"):
                 LOG.trace("Reverting song addition");
-                // model.deleteSong(editorView.getSongListTable().getValue());
+                model.deleteSong(editorView.getSongListTable().getValue());
                 isCurrentlyModified = false;
-                // model.revertSongAddition();
                 LOG.trace("Now repainting cancel button -> save button");
                 editorView.getNewSongButton().setCaption("New song");
                 editorView.getNewSongButton().setId("newSongButton");
                 break;
             case ("saveSongButton"):
-                LOG.trace("isCurrentlyModified: " + isCurrentlyModified);
-                if (isCurrentlyModified) {
-                    isCurrentlyModified = false;
-                    editorView.getEditorFields().bind(editorView.getSongNameField(), SongSQLContainer.propertyIds.SONGTITLE.toString());
-                    editorView.getEditorFields().bind(editorView.getSongAuthorField(), SongSQLContainer.propertyIds.SONGAUTHOR.toString());
-                    editorView.getEditorFields().bind(editorView.getSongTextInput(), SongSQLContainer.propertyIds.SONGLYRICS.toString());
-                    model.commitFieldGroup(editorView.getEditorFields());
-                    model.commitToContainer();
-                } else {
-                    model.saveSong(editorView.getEditorFields(), editorView.getSelectedSong());
-                }
-                // clearSearchAndSongFields();
-                // model.discardFieldGroupModifications(editorView.getEditorFields());
+                model.saveSong(editorView.getEditorFields(), editorView.getSelectedSong());
                 break;
             case ("deleteSongButton"):
                 model.deleteSong(editorView.getSongListTable().getValue());
@@ -193,14 +168,18 @@ public class OpenSongBookController implements Observer, Serializable {
         }
 
         public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+            LOG.trace("Table Value change event: " + event.getProperty().toString());
             Object songID = editorView.getSelectedSong();
             if (songID != null) {
                 LOG.trace("Selected songID: " + songID.toString());
                 // UPDATE EDITOR FIELDS
                 editorView.getEditorFields().setItemDataSource(editorView.getSongListTable().getItem(songID));
+                editorView.getSongNameField().setValidationVisible(true);
+                editorView.getSongTextInput().setValidationVisible(true);
             } else {
                 LOG.trace("songID is null");
-                editorView.getSongNameField().removeAllValidators();
+                editorView.getSongNameField().setValidationVisible(false);
+                editorView.getSongTextInput().setValidationVisible(false);
             }
             // view.getEditorLayout().setVisible(songID != null);
         }
@@ -220,20 +199,24 @@ public class OpenSongBookController implements Observer, Serializable {
             LOG.trace("Using search filter for song lyrics string: " + event.getText());
             model.getSongSQLContainer().addContainerFilter(SongSQLContainer.propertyIds.SONGLYRICS.toString(),
                     event.getText(), true, false);
-
         }
     }
 
     private void clearSearchAndSongFields() {
-        LOG.trace("Clearing all fields");
-        editorView.getSongListTable().select(null);
+        LOG.trace("Clearing search and song fields");
         editorView.getSearchSongsField().setValue("");
-
+        editorView.getSongListTable().select(editorView.getSongListTable().getNullSelectionItemId());
         editorView.getSongNameField().setValue("");
         editorView.getSongAuthorField().setValue("");
         editorView.getSongTextInput().setValue("");
+    }
 
-        // editorView.getEditorFields().discard();
+    private void clearEditorFields() {
+        LOG.trace("Clearing editor fields");
+        // editorView.getSearchSongsField().setValue("");
+        editorView.getSongNameField().setValue("");
+        editorView.getSongAuthorField().setValue("");
+        editorView.getSongTextInput().setValue("");
     }
 
     public void setSearchFieldTextChangeListener(SearchFieldTextChangeListener searchFieldTextChangeListener) {

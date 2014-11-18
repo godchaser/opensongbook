@@ -3,6 +3,7 @@ package org.duckdns.valci.opensongbook;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,13 +29,28 @@ public class OpenSongBookModel extends Observable implements Serializable {
 
     static final Logger LOG = LoggerFactory.getLogger(OpenSongBookModel.class);
 
+    private static OpenSongBookModel instance;
+
     public static String newline = System.getProperty("line.separator");
     private SongSQLContainer songSQLContainer;
 
-    public OpenSongBookModel(OpenSongBookController controller) {
-        songSQLContainer = new SongSQLContainer();
-        addObserver(controller);
+    /*
+    public static OpenSongBookModel getInstance(Object controller) {
+        if (instance == null) {
+            LOG.trace("Instantiating OpenSongBookModel");
+            instance = new OpenSongBookModel(controller);
+        }
+        LOG.trace("Registering observer controller: " + controller.toString());
+        instance.addObserver((Observer) controller);
+        LOG.trace("Returning already instantiated OpenSongBookModel");
+        return instance;
+    }
+   */
+    public OpenSongBookModel(Object controller) {
+        //songSQLContainer = new SongSQLContainer();
+        songSQLContainer = SongSQLContainer.getInstance();
         sortSQLContainterAlphabetical();
+        addObserver((Observer) controller);
     }
 
     private void sortSQLContainterAlphabetical() {
@@ -103,13 +119,30 @@ public class OpenSongBookModel extends Observable implements Serializable {
      * notifyObservers(newRowId); } }
      */
 
-    public void deleteSong(Object itemID) {
-        LOG.trace("now deleting song: " + itemID.toString());
-        songSQLContainer.getContainer().removeItem(itemID);
-        LOG.trace("trying to commit song deletion to sql db");
+    public void addSong() {
+        LOG.trace("adding new item");
+        Object newSongId = songSQLContainer.getContainer().addItem();
+        LOG.trace("added item: " + newSongId.toString());
         if (commitToContainer()) {
+            LOG.trace("commit success, getting new Row Id");
+            Object newRowId = songSQLContainer.getNewRowId();
+            LOG.trace("Updated new row in table: " + newRowId);
             setChanged();
-            notifyObservers(itemID);
+            notifyObservers(newRowId);
+        }
+    }
+
+    public void deleteSong(Object itemID) {
+        if (itemID != null) {
+            LOG.trace("now deleting song: " + itemID.toString());
+            songSQLContainer.getContainer().removeItem(itemID);
+            LOG.trace("trying to commit song deletion to sql db");
+            if (commitToContainer()) {
+                setChanged();
+                notifyObservers(itemID);
+            }
+        } else {
+            LOG.trace("Cannot delete null song ");
         }
     }
 
@@ -121,18 +154,14 @@ public class OpenSongBookModel extends Observable implements Serializable {
         LOG.trace("now trying to save ticket");
 
         commitFieldGroup(fieldGroup);
-        /*
-         * String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getTime());
-         * songSQLContainer.getContainer() .getContainerProperty(itemID,
-         * SongSQLContainer.propertyIds.MODIFIEDDATE.toString()).setValue(timeStamp);
-         */
+
         if (commitToContainer()) {
             setChanged();
             notifyObservers(itemID);
         }
     }
 
-    public boolean commitToContainer() {
+    private boolean commitToContainer() {
         boolean commitSuccess = false;
         try {
             LOG.trace("trying to commit change to sql db");
@@ -156,41 +185,19 @@ public class OpenSongBookModel extends Observable implements Serializable {
         return commitSuccess;
     }
 
-    public void commitFieldGroup(FieldGroup fieldGroup) {
+    private void commitFieldGroup(FieldGroup fieldGroup) {
         try {
             LOG.trace("now trying to commit field group values");
             fieldGroup.commit();
-        } catch (CommitException e1) {
+        }
+
+        catch (CommitException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
             Notification.show("Commit failed",
-                    "Song currently could not be updated, try refreshing page or logout/login",
+                    "Song currently could not be updated, try refreshing page or logout/login" + e1.getMessage(),
                     Notification.Type.WARNING_MESSAGE);
         }
     }
 
-    public void revertSongAddition() {
-        // TODO Auto-generated method stub
-        try {
-            LOG.trace("trying to rollback change to sql db");
-            songSQLContainer.getContainer().rollback();
-        } catch (UnsupportedOperationException e) {
-            // TODO Auto-generated catch block
-            LOG.trace("rollback failed: UnsupportedOperationException" + e);
-            e.printStackTrace();
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            LOG.trace("rollback failed: SQLException" + e);
-            e.printStackTrace();
-        } catch (OptimisticLockException e) {
-            LOG.trace("Caught OptimisticLockException, should refresh page - mid air collision");
-            Notification.show("Mid air collision detected",
-                    "Someone already updated ticket you are using, refreshing page", Notification.Type.WARNING_MESSAGE);
-            e.printStackTrace();
-        }
-    }
-    /*
-     * public void discardFieldGroupModifications(FieldGroup fieldGroup) {
-     * LOG.trace("Discarding all changes to field group"); fieldGroup.discard(); }
-     */
 }

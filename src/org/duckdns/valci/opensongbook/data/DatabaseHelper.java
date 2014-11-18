@@ -24,6 +24,8 @@ public class DatabaseHelper implements Serializable {
     private static final long serialVersionUID = 1L;
 
     static final Logger LOG = LoggerFactory.getLogger(DatabaseHelper.class);
+    
+    private static DatabaseHelper instance;
 
     private String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
     private FileResource dbFile = new FileResource(new File(basepath + "/WEB-INF/resources/" + SongSQLContainer.TABLE
@@ -61,11 +63,16 @@ public class DatabaseHelper implements Serializable {
         initDatabase();
         // fillTestData();
     }
-
     /*
-     * public static DatabaseHelper getInstance() { if (instance == null) { LOG.trace("Instantiating DatabaseHelper");
-     * instance = new DatabaseHelper(); } LOG.trace("Returning already instantiated DatabaseHelper"); return instance; }
-     */
+    public static DatabaseHelper getInstance() {
+        if (instance == null) {
+            LOG.trace("Instantiating DatabaseHelper");
+            instance = new DatabaseHelper();
+        }
+        LOG.trace("Returning already instantiated DatabaseHelper");
+        return instance;
+    }
+    */
     public void fillTestData() {
         LOG.trace("Deleting all data");
         executeSQLCommand(deleteAllDataCMD);

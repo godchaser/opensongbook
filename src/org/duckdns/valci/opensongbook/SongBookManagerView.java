@@ -10,9 +10,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
-import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 
@@ -21,8 +19,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
 
     static final Logger LOG = LoggerFactory.getLogger(SongBookManagerView.class);
 
-    //TwinColSelect songBookManagerTwinColSelect;
-    ListSelect songBookManagerTwinColSelect;
+    TwinColSelect songBookManagerTwinColSelect;
     OpenSongBookController controller;
 
     HorizontalLayout footbarLayout;
@@ -43,6 +40,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
 
     public SongBookManagerView() {
         this.controller = new OpenSongBookController(this);
+        // this.controller = OpenSongBookController.getInstance(this);
         createSongBookManagerComponents();
     }
 
@@ -52,8 +50,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
         setMargin(true);
         addComponent(new NavigationMenu());
 
-        //songBookManagerTwinColSelect = new TwinColSelect("SongBookManager", controller.getSQLContainer());
-        songBookManagerTwinColSelect = new ListSelect("SongBookManager", controller.getSQLContainer());
+        songBookManagerTwinColSelect = new TwinColSelect("SongBookManager", controller.getSQLContainer());
         songBookManagerTwinColSelect.setItemCaptionPropertyId(SongSQLContainer.propertyIds.SONGTITLE.toString());
         songBookManagerTwinColSelect.setRows(songBookManagerRows);
         addComponent(songBookManagerTwinColSelect);
@@ -90,7 +87,6 @@ public class SongBookManagerView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeEvent event) {
-        LOG.trace("Entered view");
         // TODO Auto-generated method stub
     }
 

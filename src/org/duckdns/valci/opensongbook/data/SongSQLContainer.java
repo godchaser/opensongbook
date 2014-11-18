@@ -19,6 +19,8 @@ public class SongSQLContainer implements Serializable {
     private static final long serialVersionUID = 1L;
 
     static final Logger LOG = LoggerFactory.getLogger(SongSQLContainer.class);
+    
+    private static SongSQLContainer instance;
     private DatabaseHelper dbHelper = null;
     private SQLContainer songContainer = null;
 
@@ -30,12 +32,21 @@ public class SongSQLContainer implements Serializable {
     public static enum propertyIds {
         ID, SONGTITLE, SONGLYRICS, SONGAUTHOR, MODIFIEDBY, MODIFIEDDATE, VERSION;
     }
+    
+    public static SongSQLContainer getInstance() {
+        if (instance == null) {
+            LOG.trace("Instantiating SongSQLContainer");
+            instance = new SongSQLContainer();
+        }      
+        LOG.trace("Returning already instantiated SongSQLContainer");
+        return instance;
+    }
 
     public SQLContainer getContainer() {
         return songContainer;
     }
 
-    public SongSQLContainer() {
+    private SongSQLContainer() {
         initContainers();
     }
 
@@ -43,6 +54,7 @@ public class SongSQLContainer implements Serializable {
         try {
             /* TableQuery and SQLContainer for song -table */
             // dbHelper = DatabaseHelper.getInstance();
+            //dbHelper = DatabaseHelper.getInstance();
             dbHelper = new DatabaseHelper();
             TableQuery q1 = new TableQuery(TABLE, dbHelper.getConnectionPool());
             q1.setVersionColumn(propertyIds.VERSION.toString());

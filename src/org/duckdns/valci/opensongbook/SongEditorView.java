@@ -55,6 +55,7 @@ public class SongEditorView extends VerticalLayout implements View {
 
     public SongEditorView() {
         this.controller = new OpenSongBookController(this);
+        //this.controller = OpenSongBookController.getInstance(this);
         createSongEditorComponents();
     }
 
@@ -79,8 +80,10 @@ public class SongEditorView extends VerticalLayout implements View {
         // songTextInput.setSizeFull();
         songNameField.setId("songNameField");
         // songNameField.setWidth("15%");
-        songNameField.addValidator(new StringLengthValidator("The song name must be 1-32 letters (was {0})", 1, 32,
+        songNameField.addValidator(new StringLengthValidator("The song name must be 1-32 letters (was {0})", 1, 30000,
                 false));
+        songNameField.setValidationVisible(false);
+
         editorFields.bind(songNameField, SongSQLContainer.propertyIds.SONGTITLE.toString());
 
         songAuthorField = new TextField();
@@ -88,8 +91,9 @@ public class SongEditorView extends VerticalLayout implements View {
         // songTextInput.setSizeFull();
         songAuthorField.setId("songAuthorField");
         // songAuthorField.setWidth("15%");
-        //songAuthorField.addValidator(new StringLengthValidator("The song author name must be 1-32 letters (was {0})",
-        //        1, 32, true));
+        // songAuthorField.addValidator(new
+        // StringLengthValidator("The song author name must be 1-32 letters (was {0})",
+        // 1, 32, true));
         editorFields.bind(songAuthorField, SongSQLContainer.propertyIds.SONGAUTHOR.toString());
 
         horizontalSongFieldLayout.addComponent(songNameField);
@@ -155,6 +159,8 @@ public class SongEditorView extends VerticalLayout implements View {
         searchSongsField.setTextChangeTimeout(200);
         searchSongsField.addTextChangeListener(controller.getSearchFieldTextChangeListener());
         searchSongsField.setSizeFull();
+        // TODO: currently disable because in multiple view it affects all users
+        searchSongsField.setEnabled(false);
 
         songListTable = new Table(null, controller.getSQLContainer());
         songListTable.setId("songListTable");
@@ -181,6 +187,7 @@ public class SongEditorView extends VerticalLayout implements View {
         songTextInput.setRows(songEditorRows);
         songTextInput.addValidator(new StringLengthValidator("The song lyrics must have at least 1 letters (was {0})",
                 1, 4000, false));
+        songTextInput.setValidationVisible(false);
         editorFields.bind(songTextInput, SongSQLContainer.propertyIds.SONGLYRICS.toString());
 
         // ***********SONG EDITOR LAYOUT *****************
