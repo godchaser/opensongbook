@@ -1,6 +1,8 @@
 package org.duckdns.valci.opensongbook;
 
 import org.duckdns.valci.opensongbook.data.SongSQLContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -8,14 +10,19 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.ProgressBar;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class SongBookManagerView extends VerticalLayout implements View {
 
-    TwinColSelect songBookManagerTwinColSelect;
+    static final Logger LOG = LoggerFactory.getLogger(SongBookManagerView.class);
+
+    //TwinColSelect songBookManagerTwinColSelect;
+    ListSelect songBookManagerTwinColSelect;
     OpenSongBookController controller;
 
     HorizontalLayout footbarLayout;
@@ -35,7 +42,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
     }
 
     public SongBookManagerView() {
-		this.controller = new OpenSongBookController(this);
+        this.controller = new OpenSongBookController(this);
         createSongBookManagerComponents();
     }
 
@@ -44,7 +51,9 @@ public class SongBookManagerView extends VerticalLayout implements View {
         setSpacing(true);
         setMargin(true);
         addComponent(new NavigationMenu());
-        songBookManagerTwinColSelect = new TwinColSelect("SongBookManager", controller.getSQLContainer());
+
+        //songBookManagerTwinColSelect = new TwinColSelect("SongBookManager", controller.getSQLContainer());
+        songBookManagerTwinColSelect = new ListSelect("SongBookManager", controller.getSQLContainer());
         songBookManagerTwinColSelect.setItemCaptionPropertyId(SongSQLContainer.propertyIds.SONGTITLE.toString());
         songBookManagerTwinColSelect.setRows(songBookManagerRows);
         addComponent(songBookManagerTwinColSelect);
@@ -81,6 +90,7 @@ public class SongBookManagerView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeEvent event) {
+        LOG.trace("Entered view");
         // TODO Auto-generated method stub
     }
 
