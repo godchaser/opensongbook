@@ -25,7 +25,7 @@ public class DatabaseHelper implements Serializable {
 
     static final Logger LOG = LoggerFactory.getLogger(DatabaseHelper.class);
     
-    private static DatabaseHelper instance;
+    //private static DatabaseHelper instance;
 
     private String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
     private FileResource dbFile = new FileResource(new File(basepath + "/WEB-INF/resources/" + SongSQLContainer.TABLE

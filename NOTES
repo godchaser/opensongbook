@@ -2,7 +2,7 @@ opensongbook project
 
 REQUIREMENTS:
 - ability to transpose the chords
-- manage multiple songbooks - merge (manage permissions) - maybe some full blown user managment stack?
+- manage multiple songbooks - merge (manage permissions) - maybe some full blown user management stack?
 - export to docx, pdf - watch for the fonts (Liberation ?)- see if other library is better (http://www.docx4java.org/trac/docx4j)
 - export to openlp db
 
@@ -10,15 +10,12 @@ GUI
 - see if dashboard design is good - http://demo.vaadin.com/dashboard/
 - better first to implement Navigator -https://github.com/degiere/vaadin-navigation-example
 - here are the components: http://demo.vaadin.com/sampler-for-vaadin6
-- progress indictation while generating docx
-- maybe i should use responsive design - addon
+- progress indication while generating docx
+- maybe I should use responsive design
 
 TESTING
-- should use testng- write TC to test if chord lines from all songs are recognized
-- maybe use selenium for basic end-end TC
-
-LOGGING
-- možda ne koristiti triggere - jer sam updejtam tablicu, a ne netko drugi
+- should use testng for unit test - write TC to test if chord lines from all songs are recognized
+- use selenium for basic end2end TC
 
 ANT
 - generate ID of versions
@@ -28,7 +25,6 @@ ANDROID
 
 CODE REFACTURING
 - see examples for MVP
-- IMPORTANT: SHOULD USE FORMGROPS FOR BINDING FIELDS AND DATA
 
 DOCX
 - maybe use font embeeding for monospace font - save template with embeeded font
@@ -38,5 +34,5 @@ USER PROVISIONING
 - create, add, and modify user and login session
 
 BUG
-- search filter ne radi kako treba - searhaj Tko će uzići
+- search filter for croatian letters is not working correctly
 

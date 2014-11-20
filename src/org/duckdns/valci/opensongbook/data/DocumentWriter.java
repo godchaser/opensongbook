@@ -113,49 +113,6 @@ public class DocumentWriter {
 
         generatedFile = new FileResource(new File(outputFile));
 
-        /*
-         * // A thread to do some work class WorkThread extends Thread { // Volatile because read in another thread in
-         * access() volatile double current = 0.0;
-         * 
-         * @Override public void run() { // Count up until 1.0 is reached while (current < 1.0) { current += 0.01;
-         * 
-         * // Do some "heavy work" for (RowId songitemId : selectedSongsRowIds) { System.out.println("now getting row: "
-         * + songitemId); writeSong( document, sqlContainter .getItem(songitemId) .getItemProperty(
-         * SongSQLContainer.propertyIds.songTitle .toString()).getValue() .toString(), sqlContainter
-         * .getItem(songitemId) .getItemProperty( SongSQLContainer.propertyIds.songLyrics .toString()).getValue()
-         * .toString()); } // tmpRunHeader.addBreak(BreakType.PAGE);
-         * 
-         * // write everything to file // FileOutputStream fos = new FileOutputStream(new // File("test\\"+filename +
-         * ".docx"));
-         * 
-         * FileOutputStream fos = null; try { fos = new FileOutputStream(new File(outputFile)); document.write(fos);
-         * fos.close(); } catch (IOException e1) { // TODO Auto-generated catch block e1.printStackTrace(); }
-         * 
-         * generatedFile = new FileResource(new File(outputFile));
-         * 
-         * try { sleep(50); // Sleep for 50 milliseconds } catch (InterruptedException e) { }
-         * 
-         * // Update the UI thread-safely UI.getCurrent().access(new Runnable() {
-         * 
-         * @Override public void run() { ((ProgressBar) progressComponents[1]) .setValue(new Float(current)); if
-         * (current < 1.0) ((Label) progressComponents[0]).setValue("" + ((int) (current * 100)) + "% done"); else
-         * ((Label) progressComponents[0]) .setValue("all done"); } }); }
-         * 
-         * // Show the "all done" for a while try { sleep(2000); // Sleep for 2 seconds } catch (InterruptedException e)
-         * { }
-         * 
-         * // Update the UI thread-safely UI.getCurrent().access(new Runnable() {
-         * 
-         * @Override public void run() { // Restore the state to initial ((ProgressBar) progressComponents[1])
-         * .setValue(new Float(0.0)); ((ProgressBar) progressComponents[1]).setEnabled(false);
-         * 
-         * // Stop polling UI.getCurrent().setPollInterval(-1);
-         * 
-         * // button.setEnabled(true); ((Label) progressComponents[0]).setValue("not running"); } }); } }
-         * 
-         * new WorkThread().run();
-         */
-
         return generatedFile;
     }
 

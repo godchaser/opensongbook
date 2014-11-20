@@ -29,23 +29,9 @@ public class OpenSongBookModel extends Observable implements Serializable {
 
     static final Logger LOG = LoggerFactory.getLogger(OpenSongBookModel.class);
 
-    private static OpenSongBookModel instance;
-
     public static String newline = System.getProperty("line.separator");
     private SongSQLContainer songSQLContainer;
 
-    /*
-    public static OpenSongBookModel getInstance(Object controller) {
-        if (instance == null) {
-            LOG.trace("Instantiating OpenSongBookModel");
-            instance = new OpenSongBookModel(controller);
-        }
-        LOG.trace("Registering observer controller: " + controller.toString());
-        instance.addObserver((Observer) controller);
-        LOG.trace("Returning already instantiated OpenSongBookModel");
-        return instance;
-    }
-   */
     public OpenSongBookModel(Object controller) {
         //songSQLContainer = new SongSQLContainer();
         songSQLContainer = SongSQLContainer.getInstance();

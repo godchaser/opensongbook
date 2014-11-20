@@ -27,10 +27,6 @@ public class SqliteManager {
             + "primary key (ID))";  
     private String insertSampleDataCMD = 
               "INSERT INTO " + SongSQLContainer.TABLE + " VALUES(NULL,'Naslov neke pjesme', 'Sadrzaj neke pjesme', 'Samuel', '', '06/11/2014 11:25',0);";
-            //+ "INSERT INTO " + SongSQLContainer.TABLE + " VALUES(NULL,'BUG', 'ONGOING', 'NORMAL', 'Sample ongoing bug ticket', 'Samuel', '06/11/2014 12:25','Samuel',0);"
-            //+ "INSERT INTO " + SongSQLContainer.TABLE + " VALUES(NULL,'BUG', 'ONGOING', 'HIGH', 'Sample ongoing high prio bug ticket', 'Samuel', '06/11/2014 14:25','Samuel',0);"
-            //+ "INSERT INTO " + SongSQLContainer.TABLE + " VALUES(NULL,'FEATURE', 'OPEN', 'LOW', 'Sample open low prio feature ticket', 'Samuel', '06/11/2014 15:25','Samuel',0);"
-            //+ "INSERT INTO " + SongSQLContainer.TABLE + " VALUES(NULL,'FEATURE', 'CLOSED', 'NORMAL', 'Sample closed medium prio feature ticket', 'Samuel', '06/11/2014 15:26','Samuel',0);";
     private String testTableCMD = "SELECT * FROM INFORMATION_SCHEMA.SYSTEM_TABLES where TABLE_TYPE='TABLE'";
     private String testTableDataCMD = "SELECT * FROM " + SongSQLContainer.TABLE;
     static private String deleteAllDataCMD = "delete from " + SongSQLContainer.TABLE;
@@ -53,7 +49,6 @@ public class SqliteManager {
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30);
 
-            // ID, songTitle, songLyrics, songAuthor, modifiedBy, modifiedDate
             // ID, SONGTITLE, SONGLYRICS, SONGAUTHOR, MODIFIEDBY, MODIFIEDDATE
             statement.executeUpdate("insert into opensongbook values(NULL,'" + normalizeString(song.getTitle()) + "','"
                     + normalizeString(song.getLyrics()) + "','" + normalizeString(song.getAuthor()) + "','" + "unknown"
