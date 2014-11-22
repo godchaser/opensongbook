@@ -24,12 +24,11 @@ public class DatabaseHelper implements Serializable {
     private static final long serialVersionUID = 1L;
 
     static final Logger LOG = LoggerFactory.getLogger(DatabaseHelper.class);
-    
-    //private static DatabaseHelper instance;
 
-    private String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-    private FileResource dbFile = new FileResource(new File(basepath + "/WEB-INF/resources/" + SongSQLContainer.TABLE
-            + ".sql"));
+    // private static DatabaseHelper instance;
+
+    private String basepath;
+    private FileResource dbFile;
 
     private JDBCConnectionPool connectionPool = null;
 
@@ -58,21 +57,33 @@ public class DatabaseHelper implements Serializable {
 
     //@formatter:on
 
-    public DatabaseHelper() {
+    public DatabaseHelper(boolean deployment) {
+        if (deployment) {
+            basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+            dbFile = new FileResource(new File(basepath + "/WEB-INF/resources/" + SongSQLContainer.TABLE + ".sql"));
+        } else {
+            basepath = "WebContent//WEB-INF//resources//" + SongSQLContainer.TABLE + ".sql";
+        }
         initConnectionPool();
         initDatabase();
         // fillTestData();
     }
-    /*
-    public static DatabaseHelper getInstance() {
-        if (instance == null) {
-            LOG.trace("Instantiating DatabaseHelper");
-            instance = new DatabaseHelper();
-        }
-        LOG.trace("Returning already instantiated DatabaseHelper");
-        return instance;
+
+    public void selectAllData() {
+        LOG.trace("Selecting data");
+        executeSQLQuerry(testTableDataCMD);
     }
-    */
+
+    public String executeCustomQuerry(String customQuerry) {
+        LOG.trace("Executing custom querry: " + customQuerry);
+        String res = executeSQLQuerry(customQuerry);
+        return res;
+    }
+
+    /*
+     * public static DatabaseHelper getInstance() { if (instance == null) { LOG.trace("Instantiating DatabaseHelper");
+     * instance = new DatabaseHelper(); } LOG.trace("Returning already instantiated DatabaseHelper"); return instance; }
+     */
     public void fillTestData() {
         LOG.trace("Deleting all data");
         executeSQLCommand(deleteAllDataCMD);
@@ -84,7 +95,12 @@ public class DatabaseHelper implements Serializable {
 
     private JDBCConnectionPool initConnectionPool() {
         try {
-            String dbPath = dbFile.getSourceFile().getCanonicalPath();
+            String dbPath;
+            if (dbFile != null) {
+                dbPath = dbFile.getSourceFile().getCanonicalPath();
+            } else {
+                dbPath = basepath;
+            }
             LOG.trace("Creating Connection Pool " + dbPath);
             // connectionPool = new SimpleJDBCConnectionPool("org.sqlite.JDBC",
             // "jdbc:sqlite:" + dbPath, "", "", 2, 5);
@@ -137,7 +153,8 @@ public class DatabaseHelper implements Serializable {
         }
     }
 
-    private void executeSQLQuerry(String... commands) {
+    private String executeSQLQuerry(String... commands) {
+        StringBuilder resultBuffer = new StringBuilder();
         try {
             Connection conn = connectionPool.reserveConnection();
             Statement statement = conn.createStatement();
@@ -146,22 +163,29 @@ public class DatabaseHelper implements Serializable {
                 ResultSetMetaData rsmd = rs.getMetaData();
                 PrintColumnTypes.printColTypes(rsmd);
                 int numberOfColumns = rsmd.getColumnCount();
-
+                LOG.trace("COLUMN NAMES");
                 for (int i = 1; i <= numberOfColumns; i++) {
-                    if (i > 1)
-                        LOG.trace(",  ");
-                    String columnName = rsmd.getColumnName(i);
-                    LOG.trace(columnName);
+                    if (i > 1) {
+                        // LOG.trace(",  ");
+                        String columnName = rsmd.getColumnName(i);
+                        LOG.trace(columnName);
+                    }
                 }
-                LOG.trace("");
 
                 while (rs.next()) {
+                    resultBuffer.append(rs.getString(1));
+                    resultBuffer.append("\n");
+
+                    // this is for multiple columns
                     for (int i = 1; i <= numberOfColumns; i++) {
-                        if (i > 1)
-                            LOG.trace(",  ");
-                        String columnValue = rs.getString(i);
-                        LOG.trace(columnValue);
+                        if (i > 1) {
+                            // LOG.trace(",  ");
+                            String columnValue = rs.getString(i);
+                            resultBuffer.append(columnValue);
+                            // LOG.trace(columnValue);
+                        }
                     }
+
                     LOG.trace("");
                 }
                 rs.close();
@@ -173,6 +197,7 @@ public class DatabaseHelper implements Serializable {
             LOG.trace("ExecuteSQLCommand failed");
             e.printStackTrace();
         }
+        return resultBuffer.toString();
     }
 
     public JDBCConnectionPool getConnectionPool() {
@@ -185,6 +210,6 @@ public class DatabaseHelper implements Serializable {
     }
 
     public static void main(String[] args) {
-        DatabaseHelper dh = new DatabaseHelper();
+        DatabaseHelper dh = new DatabaseHelper(false);
     }
 }

@@ -53,7 +53,7 @@ public class SongSQLContainer implements Serializable {
     private void initContainers() {
         try {
             /* TableQuery and SQLContainer for song -table */
-            dbHelper = new DatabaseHelper();
+            dbHelper = new DatabaseHelper(true);
             TableQuery q1 = new TableQuery(TABLE, dbHelper.getConnectionPool());
             q1.setVersionColumn(propertyIds.VERSION.toString());
             songContainer = new SQLContainer(q1);
