@@ -35,7 +35,7 @@ public class LineTypeChecker {
      * 
      * @return true if it's a chord line, false otherwise.
      */
-    public static boolean checkChords(String line) {
+    public static boolean isChordLine(String line) {
         // to check if string has only whitespaces
         if (StringUtils.isBlank(line)) {
             return false;
@@ -80,7 +80,7 @@ public class LineTypeChecker {
                 ".F   Em7        Asus  C/D   Dm7 C/E  F    Gm7    F/A  " };
         for (String chordLine:testChords){
             LOG.trace("now evaluaing this line: " + chordLine);
-            boolean isValidChordLine = LineTypeChecker.checkChords(chordLine);
+            boolean isValidChordLine = LineTypeChecker.isChordLine(chordLine);
             if (!isValidChordLine){
                 LOG.error("Not valid chord line: " + chordLine);
             }

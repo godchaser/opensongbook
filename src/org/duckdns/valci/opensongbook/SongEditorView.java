@@ -121,7 +121,7 @@ public class SongEditorView extends VerticalLayout implements View {
         selectChordTransposition.setNullSelectionAllowed(false);
         // Show 5 items and a scrollbar if there are more
         selectChordTransposition.setRows(3);
-        selectChordTransposition.select(0);
+        //selectChordTransposition.select(0);
         selectChordTransposition.setValue(0);
 
         transposeButton = new Button("Transpose");
@@ -159,7 +159,7 @@ public class SongEditorView extends VerticalLayout implements View {
         searchSongsField.addTextChangeListener(controller.getSearchFieldTextChangeListener());
         searchSongsField.setSizeFull();
         // TODO: currently disable because in multiple view it affects all users
-        searchSongsField.setEnabled(false);
+        //searchSongsField.setEnabled(false);
 
         songListTable = new Table(null, controller.getSQLContainer());
         songListTable.setId("songListTable");
@@ -251,18 +251,15 @@ public class SongEditorView extends VerticalLayout implements View {
     }
 
     public Object getSelectedSong() {
-        // TODO Auto-generated method stub
         Object selectedSong = songListTable.getValue();
         return selectedSong;
     }
 
     public Object[] getProgressComponents() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public FieldGroup getEditorFields() {
-        // TODO Auto-generated method stub
         return editorFields;
     }
 

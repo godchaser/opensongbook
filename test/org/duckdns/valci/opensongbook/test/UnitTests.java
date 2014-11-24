@@ -9,14 +9,15 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.duckdns.valci.opensongbook.data.ChordLineTransposer;
 import org.duckdns.valci.opensongbook.data.DatabaseHelper;
 import org.duckdns.valci.opensongbook.data.LineTypeChecker;
 import org.duckdns.valci.opensongbook.data.SongClass;
 import org.duckdns.valci.opensongbook.data.SongExporter;
 import org.duckdns.valci.opensongbook.data.SongSQLContainer;
 import org.duckdns.valci.opensongbook.data.SqliteManager;
+
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -41,7 +42,6 @@ public class UnitTests {
 
     // @Test
     public void testDatabaseTrigger() throws Exception {
-
     }
 
     // @Test
@@ -50,17 +50,17 @@ public class UnitTests {
         SongExporter.exportOpensongFolderToOpenSongbook(opensongDirectory);
     }
 
-    @Test
+    // @Test
     public void staticChordLinesTest() throws Exception {
         String chordFile = "test_data//chords";
         List<String> lines = Files.readAllLines(Paths.get(chordFile), StandardCharsets.UTF_8);
         for (String fileline : lines) {
             System.out.println(fileline);
-            Assert.assertEquals(true, LineTypeChecker.checkChords(fileline));
+            Assert.assertEquals(true, LineTypeChecker.isChordLine(fileline));
         }
     }
 
-    @Test
+    // @Test
     public void testLineTypesFromDatabase() throws Exception {
         // reading content of local db located in "WebContent//WEB-INF//resources";
         DatabaseHelper dh = new DatabaseHelper(false);
@@ -87,13 +87,27 @@ public class UnitTests {
         // here we are testing chord lines
         for (String testline : chordLines) {
             System.out.println(testline);
-            Assert.assertEquals(true, LineTypeChecker.checkChords(testline));
+            Assert.assertEquals(true, LineTypeChecker.isChordLine(testline));
         }
         // here we are testing lyrics lines
         for (String testline : plainLines) {
             System.out.println(testline);
-            Assert.assertEquals(false, LineTypeChecker.checkChords(testline));
+            Assert.assertEquals(false, LineTypeChecker.isChordLine(testline));
         }
+    }
+
+    @DataProvider(name = "transposedChords")
+    public static Object[][] transposedChords() {
+        return new Object[][] { { "C D G -/F# Em", "D E A Ab F#m" },
+                { "Bm          E         A", "Cm          F         B" } };
+    }
+
+    @Test(dataProvider = "transposedChords")
+    public void staticChordLinesTransposeTest(String chords, String transposedChords) throws Exception {
+        System.out.println("chords: " + chords);
+        System.out.println("transp: " + transposedChords);
+        ChordLineTransposer clt = new ChordLineTransposer(chords);
+        Assert.assertEquals(transposedChords, clt.transpose(2, null));
     }
 
     // @Test
@@ -103,8 +117,6 @@ public class UnitTests {
         String res = dh.executeCustomQuerry("SELECT SONGLYRICS FROM " + SongSQLContainer.TABLE);
         System.out.println(res);
     }
-
-    String count = "SELECT COUNT(SONGLYRICS) FROM " + SongSQLContainer.TABLE;
 
     // @DataProvider(name = "validChordLines")
     public static Object[][] chordLines() {
@@ -117,8 +129,6 @@ public class UnitTests {
         // String opensongDirectory = "WebContent//WEB-INF//resources";
         DatabaseHelper dh = new DatabaseHelper(false);
         String res = dh.executeCustomQuerry("SELECT SONGLYRICS FROM " + SongSQLContainer.TABLE);
-        // ArrayList <String> lines = new ArrayList <String>();
-        // for ()
         StringReader reader = new StringReader(res);
         BufferedReader br = new BufferedReader(reader);
         String line;
@@ -134,7 +144,6 @@ public class UnitTests {
                 }
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         // System.out.println(chordLines);
@@ -146,9 +155,6 @@ public class UnitTests {
             // Assert.assertEquals(true, LineTypeChecker.checkChords(line2.substring(1)));
         }
         // System.out.println(plainLines);
-        Object[][] test;
-        int i = 0;
-
         return new Object[][] { { " ", false }, { "Danas je dan!", false }, { "A ti si tu", false }, { "", false },
                 { "H alo", false }, { "E ti", false } };
     }
@@ -156,13 +162,13 @@ public class UnitTests {
     // @Test(dataProvider = "validChordLines")
     public void testChordLineTypeChecker(String inputLine, boolean expectedResult) {
         System.out.println(inputLine + " " + expectedResult);
-        Assert.assertEquals(expectedResult, LineTypeChecker.checkChords(inputLine));
+        Assert.assertEquals(expectedResult, LineTypeChecker.isChordLine(inputLine));
     }
 
     // @Test(dataProvider = "notValidChordLines")
     public void testPlainLineTypeChecker(String inputLine, boolean expectedResult) {
         System.out.println(inputLine + " " + expectedResult);
-        Assert.assertEquals(expectedResult, LineTypeChecker.checkChords(inputLine));
+        Assert.assertEquals(expectedResult, LineTypeChecker.isChordLine(inputLine));
     }
 
 }

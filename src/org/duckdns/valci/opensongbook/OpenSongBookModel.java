@@ -4,11 +4,10 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.duckdns.valci.opensongbook.data.ChordTransposer;
+import org.duckdns.valci.opensongbook.data.ChordLineTransposer;
 import org.duckdns.valci.opensongbook.data.DocumentWriter;
+import org.duckdns.valci.opensongbook.data.LineTypeChecker;
 import org.duckdns.valci.opensongbook.data.SongSQLContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +28,10 @@ public class OpenSongBookModel extends Observable implements Serializable {
 
     static final Logger LOG = LoggerFactory.getLogger(OpenSongBookModel.class);
 
-    public static String newline = System.getProperty("line.separator");
     private SongSQLContainer songSQLContainer;
 
     public OpenSongBookModel(Object controller) {
-        //songSQLContainer = new SongSQLContainer();
+        // songSQLContainer = new SongSQLContainer();
         songSQLContainer = SongSQLContainer.getInstance();
         sortSQLContainterAlphabetical();
         addObserver((Observer) controller);
@@ -45,31 +43,20 @@ public class OpenSongBookModel extends Observable implements Serializable {
     }
 
     String chordTranspose(int transposeAmmount, String songText) {
-        String[] songList = songText.split("[\r\n]+");
-        StringBuilder updatedSong = new StringBuilder();
-        for (String songLine : songList) {
-            // this is a chord line
-            if (songLine.startsWith(".")) {
-                Pattern p = Pattern.compile("[\\w'\\S]+");
-                Matcher m = p.matcher(songLine);
-                StringBuffer chordLineBuilder = new StringBuffer(songLine);
-                // go through each chord
-                while (m.find()) {
-                    String rootChord = songLine.substring(m.start(), m.end());
-                    String transposed = (".".equals(rootChord)) ? "." : ChordTransposer.improvedTransposeChord(
-                            rootChord, transposeAmmount);
-                    ;
-                    // String transposed =
-                    // ChordTransposer.improvedTransposeChord(rootChord,
-                    // (int) selectChordTransposition.getValue());
-                    chordLineBuilder.replace(m.start(), m.end(), transposed);
-                }
-                updatedSong.append(chordLineBuilder.toString() + newline);
-            } else {
-                updatedSong.append(songLine + newline);
+        String[] songLines = songText.split("[\r\n]+");
+        StringBuilder transposedSong = new StringBuilder();
+        for (String songLine : songLines) {
+            LOG.trace("Checking song lines: " + songLine);
+            String updatedSongLine = songLine;
+            if (LineTypeChecker.isChordLine(songLine)) {
+                LOG.trace("Transposing by ammount: " + transposeAmmount);
+                ChordLineTransposer clt = new ChordLineTransposer(songLine);
+                updatedSongLine = clt.transpose(transposeAmmount, null);
+                LOG.trace(updatedSongLine);
             }
+            transposedSong.append(updatedSongLine + "\r\n");
         }
-        return updatedSong.toString();
+        return transposedSong.toString();
     }
 
     public FileResource generateSongbook(Object selectedSong, Object[] progressComponents) {
@@ -132,10 +119,6 @@ public class OpenSongBookModel extends Observable implements Serializable {
         }
     }
 
-    public SQLContainer getSongSQLContainer() {
-        return songSQLContainer.getContainer();
-    }
-
     public void saveSong(FieldGroup fieldGroup, Object itemID) {
         LOG.trace("now trying to save ticket");
 
@@ -154,11 +137,9 @@ public class OpenSongBookModel extends Observable implements Serializable {
             songSQLContainer.getContainer().commit();
             commitSuccess = true;
         } catch (UnsupportedOperationException e) {
-            // TODO Auto-generated catch block
             LOG.trace("commit failed: UnsupportedOperationException" + e);
             e.printStackTrace();
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             LOG.trace("commit failed: SQLException" + e);
             e.printStackTrace();
         } catch (OptimisticLockException e) {
@@ -178,12 +159,15 @@ public class OpenSongBookModel extends Observable implements Serializable {
         }
 
         catch (CommitException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
             Notification.show("Commit failed",
                     "Song currently could not be updated, try refreshing page or logout/login" + e1.getMessage(),
                     Notification.Type.WARNING_MESSAGE);
         }
+    }
+
+    public SQLContainer getSongSQLContainer() {
+        return songSQLContainer.getContainer();
     }
 
 }
