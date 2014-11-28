@@ -1,0 +1,8 @@
+# see http://about.travis-ci.org/docs/user/languages/java/ for more hints
+language: java
+
+# list any JDK version you want to test against
+jdk:
+  - oraclejdk7
+
+script: ant
