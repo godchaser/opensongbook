@@ -1,8 +1,12 @@
 # see http://about.travis-ci.org/docs/user/languages/java/ for more hints
 language: java
 
+before_install: ant init-ivy
+install: ant resolve
+
 # list any JDK version you want to test against
 jdk:
   - oraclejdk7
+  - openjdk7
 
 script: ant
