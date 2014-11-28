@@ -1,6 +1,6 @@
 # OpenSongbook
 ===============
-
+[![Build Status](https://travis-ci.org/godchaser/opensongbook.svg)](https://travis-ci.org/godchaser/opensongbook)
 ## Introduction
 ------------
 
@@ -69,6 +69,7 @@ Web service is built on [Vaadin framework](https://www.vaadin.com)
 #### CI
 * [ant](http://ant.apache.org/) 
 * [jenkins-ci](http://jenkins-ci.org/)
+* [travis-ci](https://travis-ci.org/)
 
 License
 -------
