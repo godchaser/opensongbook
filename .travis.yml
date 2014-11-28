@@ -1,8 +1,10 @@
 # see http://about.travis-ci.org/docs/user/languages/java/ for more hints
 language: java
 
-before_install: ant init-ivy
-install: ant resolve
+before_install:
+- sudo apt-get update -qq
+- sudo apt-get install -y ant ivy
+- sudo ln -s -T /usr/share/java/ivy.jar /usr/share/ant/lib/ivy.jar
 
 # list any JDK version you want to test against
 jdk:
