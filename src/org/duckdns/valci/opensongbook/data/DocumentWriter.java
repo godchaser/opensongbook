@@ -17,6 +17,8 @@ import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.sift.SiftAction;
+
 import com.vaadin.data.util.sqlcontainer.RowId;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.server.FileResource;
@@ -24,40 +26,48 @@ import com.vaadin.server.VaadinService;
 
 public class DocumentWriter {
     static final Logger LOG = LoggerFactory.getLogger(DocumentWriter.class);
+
+    private String songTitleFont = "Arial";
+    private int songTitleSize = 18;
+    private String songLyricsFont = "Courier New";
+    private int songLyricsFontSize = 14;
     FileResource generatedFile;
 
-    public void writeSong(XWPFDocument document, String songTitle, String songLyrics) {
+    public void writeSong(XWPFDocument document, String songTitle, String songLyrics, int songTotalNumber) {
         LOG.trace("Exporting song: " + songTitle);
-        // Create Header
         XWPFParagraph tmpHeader = document.createParagraph();
-        // tmpParagraph.setSpacingLineRule(LineSpacingRule.AT_LEAST);
         XWPFRun tmpRunHeader = tmpHeader.createRun();
-        tmpRunHeader.setFontFamily("Arial");
-        tmpRunHeader.getCTR().getRPr().getRFonts().setHAnsi("Arial");
+        tmpRunHeader.setFontFamily(songTitleFont);
+        tmpRunHeader.getCTR().getRPr().getRFonts().setHAnsi(songTitleFont);
         tmpRunHeader.setText(songTitle);
-        tmpRunHeader.setFontSize(18);
+        tmpRunHeader.setFontSize(songTitleSize);
         tmpHeader.setStyle("Heading1");
         tmpHeader.setBorderBottom(Borders.SINGLE);
 
         // Create Song body
         XWPFParagraph tmpParagraph = document.createParagraph();
-        XWPFRun tmpRun = tmpParagraph.createRun();
-        tmpRun.setFontFamily("Courier New");
-        tmpRun.getCTR().getRPr().getRFonts().setHAnsi("Courier New");
-        tmpRun.setText(songLyrics);
-        tmpRun.setFontSize(14);
-        tmpParagraph.setStyle("NoSpacing");
-        // this page breaking could be controlled by switch ? - FR
-        tmpRun.addBreak(BreakType.PAGE);
+
+        XWPFRun tmpRun = null;
+        // breaking song by new lines so we can write multiple runs in paragraph and add break after each reun
+        String[] songLines = songLyrics.split("\\r?\\n");
+
+        for (String songLine : songLines) {
+            tmpRun = tmpParagraph.createRun();
+            tmpRun.setFontFamily(songLyricsFont);
+            tmpRun.getCTR().getRPr().getRFonts().setHAnsi(songLyricsFont);
+            tmpRun.setText(songLine);
+            tmpRun.setFontSize(songLyricsFontSize);
+            tmpRun.addBreak(BreakType.TEXT_WRAPPING);
+            tmpParagraph.setStyle("NoSpacing");
+        }
+        if (songTotalNumber != -1) {
+            tmpRun.addBreak(BreakType.PAGE);
+        }
     }
 
     public FileResource newSongbookWordDoc(String filename, final SQLContainer sqlContainter, Object selectedSongs,
             final Object[] progressComponents) throws Exception {
 
-        // XWPFDocument template = new XWPFDocument(new FileInputStream(new
-        // File("test\\template.dotx")));
-        // Find the application directory
-        // final FileResource generatedFile;
         final String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
         final String outputFile = basepath + "/WEB-INF/resources/" + "filename" + ".docx";
         FileResource templateFile = new FileResource(new File(basepath + "/WEB-INF/resources/template.dotx"));
@@ -83,22 +93,26 @@ public class DocumentWriter {
             selectedSongsRowIds.add((RowId) selectedSongs);
         }
 
-        for (RowId songitemId : selectedSongsRowIds) {
-            LOG.trace("Now exporting songId: " + songitemId);
-            writeSong(
-                    document,
-                    sqlContainter.getItem(songitemId)
-                            .getItemProperty(SongSQLContainer.propertyIds.SONGTITLE.toString()).getValue().toString(),
-                    sqlContainter.getItem(songitemId)
-                            .getItemProperty(SongSQLContainer.propertyIds.SONGLYRICS.toString()).getValue().toString()
-                            .replaceAll("\n", "\r\n"));
-            // this is fix to use windows line endings CRLF instead of linux LF
-        }
-        // tmpRunHeader.addBreak(BreakType.PAGE);
+        boolean singleSong = (selectedSongsRowIds.size() == 1) ? true : false;
+        int songTotalNumber = (singleSong) ? -1 : selectedSongsRowIds.size();
+        LOG.trace("Number of songs (-1 if single page): " + songTotalNumber);
 
-        // write everything to file
-        // FileOutputStream fos = new FileOutputStream(new
-        // File("test\\"+filename + ".docx"));
+        for (int i = 0; i < selectedSongsRowIds.size(); i++) {
+            RowId row = selectedSongsRowIds.get(i);
+            
+            // if this is single page or last page then we don't need page break
+            if (singleSong || (i == selectedSongsRowIds.size()-1)) {
+                songTotalNumber = -1;
+            } else {
+                songTotalNumber = i;
+            }
+            LOG.trace("Now exporting songId: " + selectedSongsRowIds.get(i));
+            writeSong(document,
+                    sqlContainter.getItem(row).getItemProperty(SongSQLContainer.propertyIds.SONGTITLE.toString())
+                            .getValue().toString(),
+                    sqlContainter.getItem(row).getItemProperty(SongSQLContainer.propertyIds.SONGLYRICS.toString())
+                            .getValue().toString(), songTotalNumber);
+        }
 
         FileOutputStream fos = null;
         try {
@@ -117,8 +131,8 @@ public class DocumentWriter {
     }
 
     public static void main(String[] args) throws Exception {
-        DocumentWriter doc = new DocumentWriter();
-        ArrayList<String> song = ParserHelpers.readFile("test_data\\" + "inputTestSong");
+        // DocumentWriter doc = new DocumentWriter();
+        // ArrayList<String> song = ParserHelpers.readFile("test_data\\" + "inputTestSong");
         // TODO: this should be unit testable somehow?!
         // doc.newSongbookWordDoc("testOutputSong", "Test song", song);
     }
