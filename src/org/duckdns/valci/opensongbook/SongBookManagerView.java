@@ -87,7 +87,9 @@ public class SongBookManagerView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeEvent event) {
-        // TODO Auto-generated method stub
+        // workaround for dirty connector: https://vaadin.com/forum#!/thread/8032847
+        // http://dev.vaadin.com/ticket/12085
+        controller.getSQLContainer().getItemIds();
     }
 
 }

@@ -25,7 +25,7 @@ public class DatabaseHelper implements Serializable {
 
     static final Logger LOG = LoggerFactory.getLogger(DatabaseHelper.class);
 
-    // private static DatabaseHelper instance;
+    private static DatabaseHelper instance;
 
     private String basepath;
     private FileResource dbFile;
@@ -57,7 +57,7 @@ public class DatabaseHelper implements Serializable {
 
     //@formatter:on
 
-    public DatabaseHelper(boolean deployment) {
+    private DatabaseHelper(boolean deployment) {
         if (deployment) {
             basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
             dbFile = new FileResource(new File(basepath + "/WEB-INF/resources/" + SongSQLContainer.TABLE + ".sql"));
@@ -80,10 +80,15 @@ public class DatabaseHelper implements Serializable {
         return res;
     }
 
-    /*
-     * public static DatabaseHelper getInstance() { if (instance == null) { LOG.trace("Instantiating DatabaseHelper");
-     * instance = new DatabaseHelper(); } LOG.trace("Returning already instantiated DatabaseHelper"); return instance; }
-     */
+    public static DatabaseHelper getInstance() {
+        if (instance == null) {
+            LOG.trace("Instantiating DatabaseHelper");
+            instance = new DatabaseHelper(true);
+        }
+        LOG.trace("Returning already instantiated DatabaseHelper");
+        return instance;
+    }
+
     public void fillTestData() {
         LOG.trace("Deleting all data");
         executeSQLCommand(deleteAllDataCMD);
@@ -108,7 +113,7 @@ public class DatabaseHelper implements Serializable {
             // SimpleJDBCConnectionPool("org.hsqldb.jdbc.JDBCDriver",
             // "jdbc:hsqldb:mem:sqlcontainer" + dbPath, "", "", 2, 5);
             connectionPool = new SimpleJDBCConnectionPool("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:file:" + dbPath,
-                    "", "", 2, 5);
+                    "", "", 2, 20);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (IOException e) {

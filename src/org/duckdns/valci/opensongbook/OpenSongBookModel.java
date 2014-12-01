@@ -31,8 +31,8 @@ public class OpenSongBookModel extends Observable implements Serializable {
     private SongSQLContainer songSQLContainer;
 
     public OpenSongBookModel(Object controller) {
-        // songSQLContainer = new SongSQLContainer();
-        songSQLContainer = SongSQLContainer.getInstance();
+        songSQLContainer = new SongSQLContainer();
+        //songSQLContainer = SongSQLContainer.getInstance();
         sortSQLContainterAlphabetical();
         addObserver((Observer) controller);
     }
